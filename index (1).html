@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>NGAN</title>
+<meta name="description" content="La plateforme de streaming dédiée au cinéma gabonais et africain.">
+<meta name="theme-color" content="#00AA5E">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;NGAN&quot;,&quot;short_name&quot;:&quot;NGAN&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#ffffff&quot;,&quot;theme_color&quot;:&quot;#00AA5E&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300AA5E'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E🇬🇦%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;any&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+:root{
+  --green:#00AA5E;--green-dark:#008C4A;--green-glow:rgba(0,170,94,0.18);
+  --bg:#fff;--bg2:#f7f7f7;--bg3:#f0f0f0;
+  --surface:#fff;--surface2:#f7f7f7;
+  --border:rgba(0,0,0,0.08);--text:#111;--text2:#555;--text3:#888;
+  --shadow:0 4px 20px rgba(0,0,0,0.07);--shadow-lg:0 12px 40px rgba(0,0,0,0.12);
+  --radius:14px;--hh:64px;--bnh:64px;--tr:0.22s cubic-bezier(.4,0,.2,1);
+}
+[data-theme=dark]{
+  --bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;
+  --surface:#141414;--surface2:#1e1e1e;
+  --border:rgba(255,255,255,0.08);--text:#f0f0f0;--text2:#aaa;--text3:#666;
+  --shadow:0 4px 20px rgba(0,0,0,0.4);--shadow-lg:0 12px 40px rgba(0,0,0,0.6);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);overflow-x:hidden;padding-bottom:calc(var(--bnh) + env(safe-area-inset-bottom));transition:background var(--tr),color var(--tr)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--green);border-radius:10px}
+
+/* SKIP LINK (a11y) */
+.skip-link{position:absolute;top:-40px;left:0;background:var(--green);color:#fff;padding:8px 16px;z-index:9999;font-weight:700;border-radius:0 0 8px 0;transition:top .2s}
+.skip-link:focus{top:0}
+
+/* HEADER */
+.header{position:fixed;top:0;left:0;width:100%;height:var(--hh);background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:1000;display:flex;align-items:center;padding:0 1rem;gap:.75rem;box-shadow:var(--shadow);transition:background var(--tr)}
+.logo-area{display:flex;align-items:baseline;gap:5px;cursor:pointer;flex-shrink:0;text-decoration:none}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;background:linear-gradient(135deg,var(--green),var(--green-dark));background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1}
+.badge{background:var(--green);color:#fff;font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:30px;letter-spacing:.5px}
+.search-container{flex:1;display:flex;align-items:center;background:var(--bg2);border-radius:30px;padding:.3rem .75rem;border:1.5px solid transparent;transition:all var(--tr);min-width:0}
+.search-container:focus-within{border-color:var(--green);background:var(--surface);box-shadow:0 0 0 3px var(--green-glow)}
+.search-container i{color:var(--text3);font-size:.85rem;margin-right:7px;flex-shrink:0}
+.search-input{border:none;background:transparent;font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--text);width:100%;outline:none}
+.search-input::placeholder{color:var(--text3)}
+.search-clear{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;display:none;padding:0 2px;flex-shrink:0}
+.header-actions{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.btn-icon{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:.9rem;transition:all var(--tr);position:relative}
+.btn-icon:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#E24B4A;border:2px solid var(--surface);display:none}
+.notif-dot.show{display:block}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;border:2px solid var(--green);cursor:pointer;transition:transform var(--tr);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar:hover{transform:scale(1.05)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bnh);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:1000;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:.4rem .6rem;color:var(--text3);font-size:.6rem;font-weight:500;transition:color var(--tr);border:none;background:none;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;min-width:52px}
+.nav-item i{font-size:1.15rem;transition:transform var(--tr)}
+.nav-item.active,.nav-item:active{color:var(--green)}
+.nav-item.active i{transform:scale(1.1)}
+
+/* HERO CAROUSEL */
+.hero-wrap{margin-top:var(--hh);position:relative;overflow:hidden}
+.hero-carousel{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform}
+.hero-slide{min-width:100%;height:58vh;min-height:360px;position:relative;display:flex;align-items:flex-end;padding:2rem 1.5rem;background-size:cover;background-position:center 30%}
+.hero-slide::before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.3) 60%,transparent 100%)}
+.hero-slide::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.5) 0%,transparent 60%)}
+.hero-content{position:relative;z-index:2;color:#fff;max-width:480px}
+.hero-genre-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 10px;border-radius:30px;margin-bottom:.6rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;letter-spacing:1px;margin-bottom:.5rem;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.hero-meta{display:flex;gap:.7rem;align-items:center;font-size:.78rem;opacity:.85;margin-bottom:.6rem;flex-wrap:wrap}
+.hero-meta-sep{opacity:.4}
+.hero-desc{font-size:.88rem;line-height:1.45;opacity:.9;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn-primary{background:var(--green);border:none;padding:.6rem 1.3rem;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;border-radius:40px;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all var(--tr);box-shadow:0 4px 14px rgba(0,170,94,.4)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,170,94,.5)}
+.btn-ghost{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.5);padding:.6rem 1.3rem;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;border-radius:40px;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:7px;backdrop-filter:blur(8px);transition:all var(--tr)}
+.btn-ghost:hover{background:rgba(255,255,255,.25)}
+.hero-dots{position:absolute;bottom:1rem;right:1.5rem;display:flex;gap:6px;z-index:3}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all var(--tr);border:none}
+.hero-dot.active{background:#fff;width:20px;border-radius:3px}
+.hero-rating{display:inline-flex;align-items:center;gap:4px;color:#ffd966;font-weight:700;font-size:.8rem}
+
+/* SECTIONS */
+.content-section{padding:1.5rem 1rem .5rem}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.section-title{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px;color:var(--text)}
+.section-title-bar{width:4px;height:18px;background:var(--green);border-radius:2px;flex-shrink:0}
+.view-all-btn{color:var(--green);font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;background:none;border:none;font-family:'DM Sans',sans-serif;padding:4px 10px;border-radius:20px;transition:background var(--tr)}
+.view-all-btn:hover{background:var(--green-glow)}
+
+/* GENRE FILTER */
+.genre-filter{display:flex;gap:.5rem;overflow-x:auto;padding:0 1rem .75rem;-webkit-overflow-scrolling:touch}
+.genre-filter::-webkit-scrollbar{display:none}
+.genre-pill{flex-shrink:0;padding:.35rem 1rem;border-radius:30px;border:1.5px solid var(--border);background:var(--surface);font-size:.78rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all var(--tr);font-family:'DM Sans',sans-serif;white-space:nowrap}
+.genre-pill.active,.genre-pill:hover{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* GABON SECTION */
+.gabon-section-wrap{padding:1.5rem 1rem .5rem}
+.gabon-section-header{background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:16px;padding:1rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.gabon-section-title{color:#fff;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.gabon-section-subtitle{color:rgba(255,255,255,.75);font-size:.72rem;margin-top:2px}
+.gabon-view-all{color:rgba(255,255,255,.9);font-size:.75rem;font-weight:600;background:rgba(255,255,255,.15);border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+
+/* MOVIE CARDS */
+.movie-row{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.5rem;-webkit-overflow-scrolling:touch}
+.movie-row::-webkit-scrollbar{display:none}
+.movie-card{min-width:148px;width:148px;flex-shrink:0;background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:pointer;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform var(--tr),box-shadow var(--tr);position:relative}
+.movie-card:hover{transform:translateY(-3px) scale(1.01);box-shadow:var(--shadow-lg)}
+.movie-card:active{transform:scale(.97)}
+.movie-poster{height:210px;background:var(--bg3);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.movie-poster img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;display:block;position:absolute;inset:0}
+.movie-card:hover .movie-poster img{transform:scale(1.05)}
+.poster-placeholder{position:absolute;inset:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text3);opacity:.4;z-index:0}
+.poster-placeholder.hidden{display:none}
+.skeleton{animation:shimmer 1.4s infinite;background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);background-size:200% 100%}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.poster-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7) 0%,transparent 50%);display:flex;flex-direction:column;justify-content:space-between;padding:6px;z-index:1}
+.card-top-badges{display:flex;justify-content:space-between;align-items:flex-start}
+.card-watchlist-btn{width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;cursor:pointer;transition:all var(--tr);backdrop-filter:blur(4px)}
+.card-watchlist-btn:hover,.card-watchlist-btn.active{background:var(--green);border-color:var(--green)}
+.card-type-badge{background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:2px 7px;border-radius:12px;font-size:.6rem;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.3px}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2px}
+.card-rating{display:inline-flex;align-items:center;gap:3px;color:#ffd966;font-size:.68rem;font-weight:700}
+.user-rating-stars{display:flex;gap:1px}
+.user-rating-stars span{font-size:.6rem;cursor:pointer;color:rgba(255,255,255,.4);transition:color var(--tr)}
+.user-rating-stars span.filled{color:#ffd966}
+.gabon-badge{background:rgba(0,170,94,.85);color:#fff;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:6px;letter-spacing:.3px}
+.progress-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.2);border-radius:0;overflow:hidden;z-index:2}
+.progress-bar-fill{height:100%;background:var(--green)}
+.movie-info{padding:.55rem .6rem}
+.movie-title{font-weight:700;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.movie-sub{font-size:.68rem;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.genre-tag{background:var(--bg3);color:var(--text3);padding:1px 6px;border-radius:8px;font-size:.6rem;font-weight:500}
+
+/* CATALOGUE GRID */
+.catalogue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:.75rem}
+.catalogue-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.cat-select{padding:.4rem .8rem;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;cursor:pointer}
+.cat-select:focus{border-color:var(--green)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:1.5rem 0 .5rem}
+.page-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr)}
+.page-btn.active,.page-btn:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* SEARCH RESULTS */
+.search-page{display:none;padding:1rem;margin-top:var(--hh)}
+.search-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:.75rem;margin-top:1rem}
+.no-results{text-align:center;padding:3rem;color:var(--text3)}
+.no-results i{font-size:2rem;margin-bottom:.75rem;display:block}
+
+/* DETAIL PAGE */
+.detail-page{display:none;margin-top:var(--hh)}
+.detail-hero{height:45vw;min-height:240px;max-height:380px;background:var(--bg3);position:relative;overflow:hidden}
+.detail-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.detail-hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,rgba(0,0,0,.2) 70%,transparent 100%)}
+.detail-body{padding:0 1rem 1.5rem}
+.detail-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.75rem}
+.detail-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;letter-spacing:.5px;color:var(--green)}
+.detail-watchlist-btn{flex-shrink:0;width:40px;height:40px;border-radius:50%;border:2px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:.9rem;cursor:pointer;transition:all var(--tr)}
+.detail-watchlist-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.detail-meta-row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.75rem}
+.detail-meta-pill{background:var(--bg2);border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:500;color:var(--text2)}
+.detail-rating-pill{background:rgba(0,170,94,.12);color:#008C4A}
+[data-theme=dark] .detail-rating-pill{color:var(--green)}
+.detail-genre-pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+.detail-genre-pill{background:var(--green-glow);color:var(--green);padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+.detail-gabon-pill{background:rgba(0,170,94,.1);border:1px solid var(--green);color:var(--green);padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.detail-desc{font-size:.9rem;line-height:1.55;color:var(--text2);margin-bottom:1rem}
+.detail-play-btn{width:100%;margin-bottom:1rem;justify-content:center;font-size:.95rem;padding:.75rem}
+.award-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.award-pill{background:rgba(255,215,0,.12);color:#9a7d00;border:1px solid rgba(255,215,0,.3);padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+[data-theme=dark] .award-pill{color:#ffd966}
+.share-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.share-btn{border:1.5px solid var(--border);background:var(--surface2);border-radius:20px;padding:5px 12px;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;gap:5px;transition:all var(--tr);font-family:'DM Sans',sans-serif}
+.share-btn:hover{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* USER RATING */
+.user-rating-section{background:var(--surface2);border-radius:14px;padding:1rem;margin:0 1rem 1rem;border:1px solid var(--border)}
+.user-rating-title{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.star-input{display:flex;gap:4px;margin-bottom:.6rem}
+.star-input button{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--bg3);transition:color var(--tr);padding:0;line-height:1}
+.star-input button.active,.star-input button:hover{color:#ffd966}
+.comment-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.5rem .75rem;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--surface);color:var(--text);resize:none;outline:none;transition:border-color var(--tr)}
+.comment-input:focus{border-color:var(--green)}
+.submit-rating-btn{margin-top:.5rem;width:100%;justify-content:center}
+.reviews-list{margin:0 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.review-card{background:var(--surface2);border-radius:12px;padding:.75rem;border:1px solid var(--border)}
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.review-user{font-size:.78rem;font-weight:700;color:var(--text)}
+.review-stars{color:#ffd966;font-size:.7rem}
+.review-text{font-size:.78rem;color:var(--text2);line-height:1.4}
+.review-date{font-size:.65rem;color:var(--text3);margin-top:.3rem}
+
+/* TRAILER */
+.trailer-section{margin:0 1rem 1rem}
+.trailer-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.trailer-embed{border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#000}
+.trailer-embed iframe{width:100%;height:100%;border:none;display:block}
+
+/* NATIVE VIDEO PLAYER */
+.player-wrap{margin:0 1rem 1rem;border-radius:14px;overflow:hidden;background:#000;position:relative}
+.native-video{width:100%;display:block;aspect-ratio:16/9;background:#000}
+.video-controls{background:rgba(0,0,0,.85);padding:.6rem .8rem;display:flex;align-items:center;gap:.6rem}
+.vc-btn{background:none;border:none;color:#fff;cursor:pointer;font-size:1rem;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background var(--tr);padding:0}
+.vc-btn:hover{background:rgba(255,255,255,.15)}
+.vc-progress{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.3);cursor:pointer;outline:none}
+.vc-progress::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--green);cursor:pointer}
+.vc-time{font-size:.68rem;color:rgba(255,255,255,.8);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.vc-vol{width:60px;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:rgba(255,255,255,.4);cursor:pointer;outline:none}
+.vc-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#fff}
+.subtitle-track{position:absolute;bottom:60px;left:0;right:0;text-align:center;pointer-events:none;padding:0 1rem}
+.subtitle-text{display:inline-block;background:rgba(0,0,0,.8);color:#fff;padding:3px 10px;border-radius:6px;font-size:.82rem;line-height:1.4;max-width:90%}
+
+/* CAST */
+.cast-section{padding:0 1rem 1rem}
+.cast-scroll{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.5rem;-webkit-overflow-scrolling:touch}
+.cast-scroll::-webkit-scrollbar{display:none}
+.cast-card{flex-shrink:0;text-align:center;width:70px}
+.cast-avatar{width:56px;height:56px;border-radius:50%;margin:0 auto .4rem;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--text3);overflow:hidden}
+.cast-avatar img{width:100%;height:100%;object-fit:cover}
+.cast-name{font-size:.65rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cast-role{font-size:.6rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* SEASON/EPISODES */
+.season-section{padding:0 1rem 1rem}
+.select-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap}
+.styled-select{padding:.5rem 1rem;border-radius:30px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;outline:none;cursor:pointer}
+.styled-select:focus{border-color:var(--green)}
+.episode-list{display:flex;flex-direction:column;gap:.6rem}
+.episode-item{background:var(--surface2);border-radius:12px;border-left:3px solid var(--green);padding:.75rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:all var(--tr)}
+.episode-item:hover{background:var(--bg3);transform:translateX(2px)}
+.ep-num{font-weight:800;color:var(--green);font-size:.78rem;min-width:48px;flex-shrink:0}
+.ep-info{flex:1;min-width:0}
+.ep-title{font-weight:600;font-size:.83rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-duration{font-size:.68rem;color:var(--text3);margin-top:2px}
+.ep-play{width:32px;height:32px;border-radius:50%;background:var(--text);color:var(--bg);border:none;display:flex;align-items:center;justify-content:center;font-size:.65rem;cursor:pointer;flex-shrink:0;transition:all var(--tr)}
+.ep-play:hover{background:var(--green);transform:scale(1.1)}
+
+/* SUGGESTIONS */
+.suggestions-section{padding:0 0 1rem}
+
+/* BACK BTN */
+.back-btn-row{display:flex;justify-content:center;padding:1rem}
+.back-btn{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);padding:.5rem 1.2rem;border-radius:40px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all var(--tr)}
+.back-btn:hover{background:var(--bg3)}
+
+/* WATCHLIST PAGE */
+.watchlist-page{display:none;padding:1rem;margin-top:var(--hh)}
+.watchlist-empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.watchlist-empty i{font-size:2.5rem;margin-bottom:.75rem;display:block;color:var(--text3)}
+.watchlist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:.75rem}
+
+/* PROFILE PAGE */
+.profile-page{display:none;padding:1rem;margin-top:var(--hh)}
+.profile-hero{background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:20px;padding:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden}
+.profile-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)}
+.profile-avatar-big{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;flex-shrink:0;cursor:pointer;overflow:hidden;position:relative}
+.profile-avatar-big img{width:100%;height:100%;object-fit:cover}
+.profile-avatar-edit{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-size:.8rem}
+.profile-avatar-big:hover .profile-avatar-edit{display:flex}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;line-height:1}
+.profile-since{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.9rem;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);line-height:1}
+.stat-label{font-size:.68rem;color:var(--text3);margin-top:2px;font-weight:500}
+.profile-section-title{font-size:.8rem;font-weight:700;color:var(--text);margin:.75rem 0 .5rem;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.history-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.history-item{display:flex;align-items:center;gap:.75rem;background:var(--surface2);border-radius:12px;padding:.6rem;border:1px solid var(--border)}
+.history-thumb{width:44px;height:60px;border-radius:8px;background:var(--bg3);object-fit:cover;flex-shrink:0}
+.history-info{flex:1;min-width:0}
+.history-title{font-size:.82rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-meta{font-size:.68rem;color:var(--text3);margin-top:2px}
+.history-prog{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden}
+.history-prog-fill{height:100%;background:var(--green);border-radius:2px}
+.parental-section{background:var(--surface2);border-radius:14px;padding:1rem;border:1px solid var(--border);margin-bottom:1rem}
+.parental-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.parental-label{font-size:.85rem;font-weight:600;color:var(--text)}
+.parental-sub{font-size:.72rem;color:var(--text3);margin-top:2px}
+.toggle-wrap{display:flex;align-items:center;gap:.5rem}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--bg3);border-radius:12px;transition:background var(--tr)}
+.toggle input:checked+.toggle-track{background:var(--green)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform var(--tr);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
+.pin-input-row{display:flex;gap:.5rem;margin-top:.75rem}
+.pin-digit{width:40px;height:44px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:1.2rem;font-weight:700;text-align:center;font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--tr)}
+.pin-digit:focus{border-color:var(--green)}
+.age-rating-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.age-badge{padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;border:1.5px solid var(--border);cursor:pointer;transition:all var(--tr);background:var(--surface);color:var(--text2)}
+.age-badge.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* DIRECTORS PAGE */
+.directors-page{display:none;padding:1rem;margin-top:var(--hh)}
+.directors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem}
+.director-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;transition:all var(--tr);box-shadow:var(--shadow)}
+.director-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.director-banner{height:120px;background:linear-gradient(135deg,var(--green-dark),var(--green));position:relative;display:flex;align-items:flex-end;padding:.75rem}
+.director-avatar{width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;position:absolute;bottom:-32px;left:1rem}
+.director-body{padding:2.5rem 1rem 1rem}
+.director-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--green);line-height:1;margin-bottom:.3rem}
+.director-years{font-size:.72rem;color:var(--text3);margin-bottom:.6rem}
+.director-bio{font-size:.8rem;line-height:1.5;color:var(--text2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.director-films{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.6rem}
+.director-film-tag{background:var(--green-glow);color:var(--green);padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600}
+
+/* QUIZ PAGE */
+.quiz-page{display:none;padding:1rem;margin-top:var(--hh)}
+.quiz-progress-bar{height:6px;background:var(--bg3);border-radius:3px;margin-bottom:1.5rem;overflow:hidden}
+.quiz-progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s ease}
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.quiz-q-num{font-size:.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.quiz-question{font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:1rem}
+.quiz-img{width:100%;border-radius:12px;height:160px;object-fit:cover;margin-bottom:1rem;background:var(--bg3)}
+.quiz-options{display:flex;flex-direction:column;gap:.5rem}
+.quiz-option{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:.75rem 1rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text);transition:all var(--tr);text-align:left;font-family:'DM Sans',sans-serif;width:100%}
+.quiz-option:hover:not(:disabled){border-color:var(--green);background:var(--green-glow)}
+.quiz-option.correct{border-color:var(--green);background:rgba(0,170,94,.12);color:var(--green)}
+.quiz-option.wrong{border-color:#E24B4A;background:rgba(226,75,74,.08);color:#E24B4A}
+.quiz-explain{background:var(--bg2);border-radius:10px;padding:.75rem;font-size:.8rem;line-height:1.4;color:var(--text2);margin-top:.75rem;border-left:3px solid var(--green)}
+.quiz-score{text-align:center;padding:2rem}
+.quiz-score-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--green);line-height:1}
+.quiz-score-label{font-size:1rem;font-weight:600;color:var(--text);margin-top:.3rem}
+.quiz-score-msg{font-size:.85rem;color:var(--text2);margin-top:.5rem}
+
+/* NEWS PAGE */
+.news-page{display:none;padding:1rem;margin-top:var(--hh)}
+.news-grid{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+.news-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;gap:.75rem;cursor:pointer;transition:all var(--tr);box-shadow:var(--shadow)}
+.news-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.news-img{width:90px;height:90px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.news-body{padding:.6rem .6rem .6rem 0;flex:1;min-width:0}
+.news-cat{font-size:.6rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.2rem}
+.news-title{font-size:.85rem;font-weight:700;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-meta{font-size:.65rem;color:var(--text3);margin-top:.3rem}
+
+/* NOTIFICATIONS PANEL */
+.notif-panel{position:fixed;top:var(--hh);right:0;width:320px;max-width:95vw;background:var(--surface);border:1px solid var(--border);border-radius:0 0 16px 16px;box-shadow:var(--shadow-lg);z-index:999;transform:translateY(-110%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:60vh;overflow-y:auto}
+.notif-panel.open{transform:translateY(0)}
+.notif-panel-head{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-panel-title{font-size:.85rem;font-weight:700;color:var(--text)}
+.notif-mark-read{background:none;border:none;font-size:.72rem;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600}
+.notif-item{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:.6rem;align-items:flex-start;cursor:pointer;transition:background var(--tr)}
+.notif-item:hover{background:var(--bg2)}
+.notif-item.unread{background:rgba(0,170,94,.05)}
+.notif-icon{width:36px;height:36px;border-radius:50%;background:var(--green-glow);display:flex;align-items:center;justify-content:center;color:var(--green);font-size:.85rem;flex-shrink:0}
+.notif-text{font-size:.78rem;color:var(--text);line-height:1.4;flex:1}
+.notif-time{font-size:.65rem;color:var(--text3);margin-top:2px}
+
+/* SHARE MODAL */
+.share-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2500;display:none;align-items:flex-end;justify-content:center}
+.share-modal-bg.open{display:flex}
+.share-modal{background:var(--surface);border-radius:20px 20px 0 0;padding:1.5rem;width:100%;max-width:480px}
+.share-modal-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem;text-align:center}
+.share-options{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem}
+.share-option{display:flex;flex-direction:column;align-items:center;gap:.4rem;cursor:pointer;padding:.6rem;border-radius:12px;border:1px solid var(--border);background:var(--surface2);transition:all var(--tr)}
+.share-option:hover{border-color:var(--green);background:var(--green-glow)}
+.share-option i{font-size:1.3rem;color:var(--text2)}
+.share-option span{font-size:.62rem;color:var(--text3);font-weight:500}
+.share-link-row{display:flex;gap:.5rem}
+.share-link-input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:.5rem .75rem;font-size:.78rem;background:var(--bg2);color:var(--text);outline:none;font-family:'DM Sans',sans-serif}
+.share-copy-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.5rem 1rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.share-close{width:100%;margin-top:.75rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:.6rem;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif}
+
+/* VIDEO MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:2000;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-inner{width:100%;height:100%;position:relative;display:flex;flex-direction:column}
+.modal-iframe{width:100%;flex:1;border:none;display:block}
+.modal-close{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;background:var(--green);color:#fff;border:none;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 12px rgba(0,170,94,.4);transition:transform var(--tr)}
+.modal-close:hover{transform:scale(1.1)}
+
+/* PAGE TRANSITIONS */
+.page{animation:pageFade .28s ease}
+@keyframes pageFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-label{font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:.4rem;padding:0 1rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--bnh) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:.55rem 1.2rem;border-radius:30px;font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;z-index:3000;pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:7px;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* INSTALL BANNER */
+.install-banner{background:linear-gradient(135deg,var(--green-dark),var(--green));padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;margin:0 1rem 1rem;border-radius:14px;display:none}
+.install-banner.show{display:flex}
+.install-banner-text{flex:1;font-size:.8rem;color:#fff;font-weight:500}
+.install-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.install-close-btn{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.9rem;padding:0 2px}
+
+@media(min-width:640px){.movie-card{min-width:172px;width:172px}.movie-poster{height:245px}.hero-title{font-size:3.5rem}}
+@media(min-width:960px){.bottom-nav{display:none}body{padding-bottom:0}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+<!-- HEADER -->
+<header class="header" role="banner">
+  <a class="logo-area" id="logoBtn" href="#" aria-label="NGAN accueil" onclick="event.preventDefault();goHome()">
+    <span class="logo">NGAN</span>
+    <span class="badge">🇬🇦</span>
+  </a>
+  <div class="search-container" role="search">
+    <i class="fas fa-search" aria-hidden="true"></i>
+    <input type="search" class="search-input" id="searchInput" placeholder="Films, séries, réalisateurs…" aria-label="Rechercher">
+    <button class="search-clear" id="searchClearBtn" aria-label="Effacer"><i class="fas fa-times-circle"></i></button>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" id="notifBtn" aria-label="Notifications" aria-haspopup="true">
+      <i class="fas fa-bell"></i>
+      <span class="notif-dot" id="notifDot"></span>
+    </button>
+    <button class="btn-icon" id="themeBtn" aria-label="Mode sombre"><i class="fas fa-moon" id="themeIcon"></i></button>
+    <div class="avatar" id="avatarBtn" tabindex="0" role="button" aria-label="Mon profil"><i class="fas fa-user" id="avatarIcon"></i></div>
+  </div>
+</header>
+
+<!-- NOTIFICATIONS PANEL -->
+<div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications">
+  <div class="notif-panel-head">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-read" id="markReadBtn">Tout marquer lu</button>
+  </div>
+  <div id="notifList"></div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <span class="install-banner-text">📱 Installer NGAN sur votre écran d'accueil</span>
+  <button class="install-btn" id="installBtn">Installer</button>
+  <button class="install-close-btn" id="installCloseBtn"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- HOME PAGE -->
+<main id="main-content">
+<div id="homePage" class="page">
+  <div class="hero-wrap" role="region" aria-label="À la une">
+    <div class="hero-carousel" id="heroCarousel"></div>
+    <div class="hero-dots" id="heroDots" role="tablist" aria-label="Slides"></div>
+  </div>
+  <div class="genre-filter" id="genreFilter" role="tablist" aria-label="Filtrer par genre"></div>
+  <div class="gabon-section-wrap" id="gabonSectionWrap">
+    <div class="gabon-section-header">
+      <div>
+        <div class="gabon-section-title">🇬🇦 Cinéma Gabonais</div>
+        <div class="gabon-section-subtitle">Films &amp; séries 100% made in Gabon</div>
+      </div>
+      <button class="gabon-view-all" data-section="gabon">Tout voir</button>
+    </div>
+    <div class="movie-row" id="gabonRow" role="list"></div>
+  </div>
+  <div class="content-section">
+    <div class="section-header">
+      <div class="section-title"><div class="section-title-bar"></div><span><i class="fas fa-fire" style="color:var(--green);margin-right:5px"></i>Films populaires</span></div>
+      <button class="view-all-btn" data-section="films">Voir tout <i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="movie-row" id="moviesRow" role="list"></div>
+  </div>
+  <div class="content-section">
+    <div class="section-header">
+      <div class="section-title"><div class="section-title-bar"></div><span><i class="fas fa-tv" style="color:var(--green);margin-right:5px"></i>Séries à succès</span></div>
+      <button class="view-all-btn" data-section="series">Explorer <i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="movie-row" id="seriesRow" role="list"></div>
+  </div>
+  <div class="content-section">
+    <div class="section-header">
+      <div class="section-title"><div class="section-title-bar"></div><span><i class="fas fa-star" style="color:var(--green);margin-right:5px"></i>Recommandés</span></div>
+      <button class="view-all-btn" data-section="recommended">Tendance <i class="fas fa-chart-line"></i></button>
+    </div>
+    <div class="movie-row" id="recommendedRow" role="list"></div>
+  </div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div id="searchPage" class="search-page">
+  <div class="section-header">
+    <div class="section-title"><div class="section-title-bar"></div><span id="searchTitle">Résultats</span></div>
+    <button class="view-all-btn" id="clearSearchBtn"><i class="fas fa-times"></i> Effacer</button>
+  </div>
+  <div id="searchResultsGrid" class="search-results-grid" role="list"></div>
+</div>
+
+<!-- CATALOGUE PAGE -->
+<div id="cataloguePage" class="watchlist-page">
+  <div class="section-header" style="margin-bottom:.75rem">
+    <div class="section-title"><div class="section-title-bar"></div><span>Catalogue</span></div>
+    <span id="catCount" style="font-size:.8rem;color:var(--text3)"></span>
+  </div>
+  <div class="catalogue-controls">
+    <select class="cat-select" id="catType" aria-label="Type">
+      <option value="all">Tous</option>
+      <option value="film">Films</option>
+      <option value="serie">Séries</option>
+    </select>
+    <select class="cat-select" id="catGenre" aria-label="Genre"></select>
+    <select class="cat-select" id="catSort" aria-label="Trier par">
+      <option value="rating">Mieux notés</option>
+      <option value="year">Plus récents</option>
+      <option value="az">A–Z</option>
+    </select>
+  </div>
+  <div class="catalogue-grid" id="catGrid" role="list"></div>
+  <div class="pagination" id="catPagination"></div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div id="detailPage" class="detail-page page">
+  <div class="detail-hero"><img id="detailHeroImg" src="" alt="" loading="lazy"><div class="detail-hero-overlay"></div></div>
+  <div class="detail-body">
+    <div class="detail-title-row">
+      <h1 class="detail-title" id="detailTitle"></h1>
+      <button class="detail-watchlist-btn" id="detailWatchlistBtn" aria-label="Ma liste"><i class="fas fa-plus"></i></button>
+    </div>
+    <div class="detail-meta-row" id="detailMetaRow"></div>
+    <div id="detailGabonBadge" style="margin-bottom:.7rem;display:none"><span class="detail-gabon-pill">🇬🇦 Production Gabonaise</span></div>
+    <div id="detailAwards" class="award-row"></div>
+    <div class="detail-genre-pills" id="detailGenrePills"></div>
+    <p class="detail-desc" id="detailDesc"></p>
+    <div class="share-row" id="shareRow"></div>
+    <button class="btn-primary detail-play-btn" id="detailPlayBtn"><i class="fas fa-play"></i> Regarder maintenant</button>
+  </div>
+  <div class="trailer-section" id="trailerSection" style="display:none">
+    <div class="trailer-title"><i class="fas fa-film" style="color:var(--green)"></i> Bande-annonce</div>
+    <div class="trailer-embed"><iframe id="trailerFrame" src="" allowfullscreen allow="autoplay" loading="lazy"></iframe></div>
+  </div>
+  <div class="player-wrap" id="playerWrap" style="display:none">
+    <video class="native-video" id="nativeVideo" preload="none" playsinline>
+      <track kind="subtitles" srclang="fr" label="Français" id="subTrack">
+    </video>
+    <div class="subtitle-track"><span class="subtitle-text" id="subText" style="display:none"></span></div>
+    <div class="video-controls">
+      <button class="vc-btn" id="vcPlay" aria-label="Lecture"><i class="fas fa-play"></i></button>
+      <span class="vc-time" id="vcTime">0:00 / 0:00</span>
+      <input type="range" class="vc-progress" id="vcProgress" value="0" min="0" max="100" step="0.1" aria-label="Progression">
+      <button class="vc-btn" id="vcMute" aria-label="Muet"><i class="fas fa-volume-up"></i></button>
+      <input type="range" class="vc-vol" id="vcVol" value="100" min="0" max="100" step="1" aria-label="Volume">
+      <button class="vc-btn" id="vcSub" aria-label="Sous-titres" title="Sous-titres (simulés)"><i class="fas fa-closed-captioning"></i></button>
+      <button class="vc-btn" id="vcFull" aria-label="Plein écran"><i class="fas fa-expand"></i></button>
+    </div>
+  </div>
+  <div class="cast-section" id="castSection" style="display:none">
+    <p class="section-label">Casting</p>
+    <div class="cast-scroll" id="castScroll"></div>
+  </div>
+  <div class="season-section" id="seasonSection" style="display:none">
+    <div class="select-row">
+      <p class="section-label" style="margin:0;padding:0">Épisodes</p>
+      <select class="styled-select" id="seasonSelect" aria-label="Saison"></select>
+    </div>
+    <div class="episode-list" id="episodeList"></div>
+  </div>
+  <!-- USER RATING -->
+  <div class="user-rating-section" id="userRatingSection">
+    <div class="user-rating-title"><i class="fas fa-star" style="color:#ffd966"></i> Votre avis</div>
+    <div class="star-input" id="starInput" role="group" aria-label="Note de 1 à 5 étoiles">
+      <button aria-label="1 étoile" data-val="1">⭐</button>
+      <button aria-label="2 étoiles" data-val="2">⭐</button>
+      <button aria-label="3 étoiles" data-val="3">⭐</button>
+      <button aria-label="4 étoiles" data-val="4">⭐</button>
+      <button aria-label="5 étoiles" data-val="5">⭐</button>
+    </div>
+    <textarea class="comment-input" id="commentInput" rows="2" placeholder="Donnez votre avis (optionnel)…"></textarea>
+    <button class="btn-primary submit-rating-btn" id="submitRatingBtn"><i class="fas fa-paper-plane"></i> Publier</button>
+  </div>
+  <div class="reviews-list" id="reviewsList"></div>
+  <div class="suggestions-section" id="suggestionsSection">
+    <div class="content-section" style="padding-top:.5rem">
+      <div class="section-header"><div class="section-title"><div class="section-title-bar"></div><span>Dans le même genre</span></div></div>
+      <div class="movie-row" id="suggestionsRow"></div>
+    </div>
+  </div>
+  <div class="back-btn-row"><button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Retour</button></div>
+</div>
+
+<!-- WATCHLIST PAGE -->
+<div id="watchlistPage" class="watchlist-page page">
+  <div class="section-header" style="margin-bottom:1rem">
+    <div class="section-title"><div class="section-title-bar"></div><span>Ma liste</span></div>
+    <span id="watchlistCount" style="font-size:.8rem;color:var(--text3)"></span>
+  </div>
+  <div id="watchlistEmpty" class="watchlist-empty">
+    <i class="far fa-bookmark"></i>
+    <p style="font-weight:600;margin-bottom:.4rem">Votre liste est vide</p>
+    <p style="font-size:.82rem">Ajoutez des films et séries pour les retrouver ici.</p>
+  </div>
+  <div class="watchlist-grid" id="watchlistGrid" style="display:none" role="list"></div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="profilePage" class="profile-page page">
+  <div class="profile-hero">
+    <div class="profile-avatar-big" id="profileAvatarBig" onclick="document.getElementById('avatarUpload').click()" tabindex="0" aria-label="Changer de photo">
+      <i class="fas fa-user" id="profileAvatarIcon"></i>
+      <div class="profile-avatar-edit"><i class="fas fa-camera"></i></div>
+    </div>
+    <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+    <div>
+      <div class="profile-name" id="profileName">Utilisateur</div>
+      <div class="profile-since" id="profileSince">Membre depuis aujourd'hui</div>
+    </div>
+  </div>
+  <div class="profile-stats">
+    <div class="stat-card"><div class="stat-num" id="statWatched">0</div><div class="stat-label">Vus</div></div>
+    <div class="stat-card"><div class="stat-num" id="statList">0</div><div class="stat-label">Ma liste</div></div>
+    <div class="stat-card"><div class="stat-num" id="statRated">0</div><div class="stat-label">Notés</div></div>
+  </div>
+  <div style="padding:0 0 1rem">
+    <div class="profile-section-title"><i class="fas fa-history" style="color:var(--green)"></i> Historique</div>
+    <div class="history-list" id="historyList">
+      <div style="text-align:center;padding:1rem;color:var(--text3);font-size:.82rem">Aucun visionnage pour le moment.</div>
+    </div>
+  </div>
+  <div class="parental-section">
+    <div class="profile-section-title" style="margin:0 0 .75rem"><i class="fas fa-child" style="color:var(--green)"></i> Contrôle parental</div>
+    <div class="parental-row">
+      <div>
+        <div class="parental-label">Mode enfant</div>
+        <div class="parental-sub">Filtre le contenu adulte</div>
+      </div>
+      <label class="toggle" aria-label="Activer le contrôle parental">
+        <input type="checkbox" id="parentalToggle">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div id="parentalOptions" style="display:none;margin-top:.75rem">
+      <div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:.4rem">Âge maximum autorisé</div>
+      <div class="age-rating-row" id="ageRatingRow">
+        <button class="age-badge active" data-age="7">7+</button>
+        <button class="age-badge" data-age="10">10+</button>
+        <button class="age-badge" data-age="12">12+</button>
+        <button class="age-badge" data-age="16">16+</button>
+      </div>
+      <div style="font-size:.78rem;font-weight:600;color:var(--text);margin:.75rem 0 .4rem">Code PIN (4 chiffres)</div>
+      <div class="pin-input-row" id="pinInputRow">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN chiffre 1">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN chiffre 2">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN chiffre 3">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" aria-label="PIN chiffre 4">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECTORS PAGE -->
+<div id="directorsPage" class="directors-page page">
+  <div class="section-header" style="margin-bottom:1rem">
+    <div class="section-title"><div class="section-title-bar"></div><span>Réalisateurs gabonais</span></div>
+  </div>
+  <div class="directors-grid" id="directorsGrid"></div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quizPage" class="quiz-page page">
+  <div class="section-header" style="margin-bottom:1rem">
+    <div class="section-title"><div class="section-title-bar"></div><span>Quiz cinéma gabonais</span></div>
+    <button class="view-all-btn" id="quizRestartBtn"><i class="fas fa-redo"></i> Recommencer</button>
+  </div>
+  <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill"></div></div>
+  <div id="quizContent"></div>
+</div>
+
+<!-- NEWS PAGE -->
+<div id="newsPage" class="news-page page">
+  <div class="section-header" style="margin-bottom:1rem">
+    <div class="section-title"><div class="section-title-bar"></div><span>Actualités cinéma</span></div>
+  </div>
+  <div class="news-grid" id="newsGrid"></div>
+</div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" role="navigation" aria-label="Navigation principale">
+  <button class="nav-item active" data-nav="home" aria-label="Accueil" aria-current="page"><i class="fas fa-home"></i><span>Accueil</span></button>
+  <button class="nav-item" data-nav="search" aria-label="Rechercher"><i class="fas fa-search"></i><span>Recherche</span></button>
+  <button class="nav-item" data-nav="catalogue" aria-label="Catalogue"><i class="fas fa-th-large"></i><span>Catalogue</span></button>
+  <button class="nav-item" data-nav="watchlist" aria-label="Ma liste"><i class="fas fa-bookmark"></i><span>Ma liste</span></button>
+  <button class="nav-item" data-nav="profile" aria-label="Mon profil"><i class="fas fa-user"></i><span>Profil</span></button>
+</nav>
+
+<!-- VIDEO MODAL (YouTube iframe) -->
+<div id="videoModal" class="modal" role="dialog" aria-modal="true" aria-label="Lecteur vidéo">
+  <div class="modal-inner">
+    <iframe id="playerFrame" class="modal-iframe" src="about:blank" allowfullscreen allow="autoplay"></iframe>
+    <button class="modal-close" id="modalCloseBtn" aria-label="Fermer"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="share-modal-bg" id="shareModalBg" role="dialog" aria-modal="true" aria-label="Partager">
+  <div class="share-modal">
+    <div class="share-modal-title">Partager ce contenu</div>
+    <div class="share-options">
+      <div class="share-option" onclick="shareVia('whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
+      <div class="share-option" onclick="shareVia('facebook')"><i class="fab fa-facebook" style="color:#1877F2"></i><span>Facebook</span></div>
+      <div class="share-option" onclick="shareVia('twitter')"><i class="fab fa-twitter" style="color:#1DA1F2"></i><span>Twitter</span></div>
+      <div class="share-option" onclick="shareVia('copy')"><i class="fas fa-link" style="color:var(--green)"></i><span>Copier</span></div>
+    </div>
+    <div class="share-link-row">
+      <input class="share-link-input" id="shareLinkInput" readonly>
+      <button class="share-copy-btn" onclick="copyShareLink()">Copier</button>
+    </div>
+    <button class="share-close" onclick="closeShareModal()">Fermer</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ═══════════════════ DATA ═══════════════════ */
+const DB = {
+  301:{id:301,gabon:true,title:"Dôlè (L'Argent)",year:"2000",type:"film",rating:"4.7",duration:"1h20",genres:["Drame","Social"],description:"À Libreville, Mougler et sa bande décident de braquer le kiosque de la loterie pour payer les médicaments de sa mère malade. Fable urbaine récompensée à Cannes et Carthage.",poster:"https://images.unsplash.com/photo-1574028760769-8e24f4f0fc99?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["Tanit d'Or — Carthage 2000","Prix Spécial — Cannes Junior 2000"],cast:[{name:"David N. Nkogue",role:"Mougler"},{name:"Emile M. Matala",role:"Baby Lee"},{name:"Roland Nkeyi",role:"Joker"}],director:"Imunga Ivanga",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  302:{id:302,gabon:true,title:"L'Ombre de Liberty",year:"2006",type:"film",rating:"4.5",duration:"1h30",genres:["Drame","Société"],description:"Portrait saisissant des contradictions de la société gabonaise moderne, entre tradition et mondialisation. Second long métrage d'Imunga Ivanga.",poster:"https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["Sélection internationale 2006"],cast:[{name:"Imunga Ivanga",role:"Réalisation"}],director:"Imunga Ivanga",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  303:{id:303,gabon:true,title:"Assang Mefa",year:"2019",type:"film",rating:"4.3",duration:"1h15",genres:["Historique","Drame"],description:"Gabon colonial. Le résistant Emane Ntole, pourchassé par les colons qui ont pris son fils en otage, mène un combat désespéré pour la liberté de son peuple.",poster:"https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:[],cast:[{name:"Marlon Mave",role:"Emane Ntole"},{name:"Olivier Messa",role:"Mikibi"}],director:"Franck Onouviet",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  304:{id:304,gabon:true,title:"Onomé — Naissance d'un héros",year:"2020",type:"film",rating:"4.0",duration:"1h25",genres:["Action","Fantastique"],description:"Premier long métrage gabonais de super-héros. Entre voyage dans le temps et aventure épique, une production inédite qui explore de nouveaux territoires.",poster:"https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:[],cast:[{name:"Florine Tchoua",role:"Réalisation"},{name:"Jérémie Tchoua",role:"Réalisation"}],director:"Florine & Jérémie Tchoua",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  305:{id:305,gabon:true,title:"Koto et Kengue : Les Descendants",year:"2023",type:"film",rating:"4.4",duration:"1h40",genres:["Aventure","Fantastique"],description:"Suite de la saga gabonaise de Vincent Mbindzou. Deux héros aux pouvoirs ancestraux affrontent les forces du chaos entre passé et futur. Disponible sur TV5MONDE Afrique.",poster:"https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["TV5MONDE Afrique"],cast:[{name:"Vincent Mbindzou",role:"Réalisation"},{name:"Medard Mouele",role:"Protagoniste"}],director:"Vincent Mbindzou",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  306:{id:306,gabon:true,title:"Boxing Libreville",year:"2018",type:"film",rating:"4.6",duration:"1h05",genres:["Documentaire","Sport"],description:"Documentaire primé sur la scène boxe de Libreville. Des destins forgés dans la sueur et la persévérance au cœur de la capitale gabonaise.",poster:"https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["Plusieurs prix 2018"],cast:[{name:"Amédée P. Nkoulou",role:"Réalisation"}],director:"Amédée Pacôme Nkoulou",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  401:{id:401,gabon:true,title:"Le Chic, le Choc, l'Échec",year:"2023",type:"serie",rating:"4.8",duration:"~24min/ép",genres:["Drame social","Société"],description:"Phénomène d'audience sur Gabon 1ère. La série dénonce le harcèlement sexuel, les abus de pouvoir et la corruption. Diffusée chaque dimanche à 21h.",poster:"https://images.unsplash.com/photo-1524863479829-916d8e77f114?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["Carton d'audience Gabon 1ère 2023","YouTube — Gabon Égalité"],cast:[{name:"Esteban Oussou",role:"Réalisation"},{name:"Jessye Ella Ekogha",role:"Direction artistique"}],director:"Production Gabon Égalité",seasons:{1:{name:"Saison 1 (2023)",episodes:[{number:1,title:"Le Recrutement",duration:"24min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"Le Stage",duration:"24min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:3,title:"Le Piège",duration:"24min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:4,title:"La Résistance",duration:"24min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:5,title:"Le Verdict",duration:"24min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  402:{id:402,gabon:true,title:"Gabâo",year:"2020",type:"serie",rating:"4.5",duration:"~4min/ép",genres:["Animation","Jeunesse"],description:"Série d'animation éducative made in Gabon, diffusée sur TV5MONDE et TiVi5. Gabâo guide les enfants à travers les technologies et les parcs nationaux. 6 saisons, 156 épisodes.",poster:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["TV5MONDE Afrique","6 saisons — 156 épisodes"],cast:[{name:"Vincent Mbindzou",role:"Réalisation"}],director:"Vincent Mbindzou",seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"Le Téléphone",duration:"4min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"La Tablette",duration:"4min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:3,title:"Le Réfrigérateur",duration:"4min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]},6:{name:"Saison 6 — Parcs nationaux",episodes:[{number:1,title:"La Lopé",duration:"4min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"Pongara",duration:"4min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  403:{id:403,gabon:true,title:"Impact",year:"2022",type:"serie",rating:"4.3",duration:"~35min/ép",genres:["Thriller","Politique"],description:"Un web-activiste est enlevé par une milice au service du pouvoir. Huis-clos sous tension dans les coulisses d'un Gabon contemporain fracturé.",poster:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",awards:["Saison 2 confirmée"],cast:[{name:"Medard Mouele",role:"Le web-activiste"},{name:"Prince de Capistran",role:"L'agent"}],director:"Production IGIS",seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"L'Enlèvement",duration:"36min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"Les Négociations",duration:"34min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:3,title:"La Trahison",duration:"38min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]},2:{name:"Saison 2",episodes:[{number:1,title:"Le Retour",duration:"35min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"La Revanche",duration:"37min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  1:{id:1,title:"Le Cercle Rouge",year:"2024",type:"film",rating:"4.8",duration:"1h52",genres:["Thriller","Policier"],description:"Un inspecteur obstiné poursuit un braqueur de génie dans les ruelles de Paris.",poster:"https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Marc D.",role:"Inspecteur"},{name:"Alice R.",role:"La fuyarde"}],videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  2:{id:2,title:"Code Rouge",year:"2023",type:"film",rating:"4.5",duration:"2h05",genres:["Action","Cyberpunk"],description:"Un hacker solitaire découvre une organisation secrète qui contrôle les réseaux mondiaux.",poster:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Sam K.",role:"Le hacker"}],videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  3:{id:3,title:"Nuit Tropicale",year:"2025",type:"film",rating:"4.9",duration:"1h38",genres:["Horreur","Suspense"],description:"Dans la forêt équatoriale, une équipe réveille quelque chose d'ancien. Horreur atmosphérique.",poster:"https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Clara H.",role:"Protagoniste"}],videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  4:{id:4,title:"L'Infiltré",year:"2022",type:"film",rating:"4.3",duration:"2h12",genres:["Espionnage","Drame"],description:"Un agent double infiltre le cercle le plus fermé d'une puissance étrangère.",poster:"https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"André G.",role:"L'infiltré"}],videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  101:{id:101,title:"Les Seigneurs Rouges",year:"2024",type:"serie",rating:"4.7",duration:"~47min/ép",genres:["Politique","Drame"],description:"Rivalités sanglantes pour le pouvoir dans une cité-état médiévale.",poster:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Henri V.",role:"Le roi"}],seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"Le Trône vacille",duration:"44min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"Alliances Mortelles",duration:"51min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]},2:{name:"Saison 2",episodes:[{number:1,title:"Nouvel Ordre",duration:"52min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  102:{id:102,title:"Crimson Dawn",year:"2023",type:"serie",rating:"4.6",duration:"~38min/ép",genres:["Sci-Fi","Action"],description:"Dans un futur post-apocalyptique, une résistance émerge des décombres.",poster:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Zara T.",role:"La leader"}],seasons:{1:{name:"Saison unique",episodes:[{number:1,title:"L'Aube",duration:"40min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"Sanctuaire",duration:"38min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  103:{id:103,title:"Bloodline",year:"2025",type:"serie",rating:"5.0",duration:"~55min/ép",genres:["Crime","Drame"],description:"Une saga familiale entre héritage, crimes et loyautés brisées.",poster:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Elsa V.",role:"La matriarche"}],seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"Le Testament",duration:"58min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  104:{id:104,title:"Noir & Forêt",year:"2024",type:"serie",rating:"4.4",duration:"~42min/ép",genres:["Policier","Thriller"],description:"Une enquêtrice traque un réseau criminel dans les forêts équatoriales.",poster:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Laure D.",role:"Enquêtrice"}],seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"La Piste",duration:"44min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  201:{id:201,title:"La Pirogue d'Or",year:"2024",type:"film",rating:"4.2",duration:"1h44",genres:["Sport","Drame"],description:"Un rameur joue le tout pour le tout sur les eaux de l'Ogooué.",poster:"https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Eric L.",role:"Le rameur"}],videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},
+  202:{id:202,title:"Shadow & Forêt",year:"2023",type:"serie",rating:"4.9",duration:"~50min/ép",genres:["Fantasy","Action"],description:"Dans les forêts sacrées, une guerrière découvre des pouvoirs ancestraux.",poster:"https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Vera N.",role:"La guerrière"}],seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"L'Éveil",duration:"52min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}},
+  999:{id:999,title:"L'Héritage du Fleuve",year:"2025",type:"serie",rating:"5.0",duration:"~60min/ép",genres:["Épopée","Histoire"],description:"Série originale NGAN. Trois générations au bord de l'Ogooué — colonisation, indépendance, Gabon d'aujourd'hui.",poster:"https://images.unsplash.com/photo-1520637836993-5a1a49857b25?w=400&q=80",trailer:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",cast:[{name:"Amara D.",role:"La matriarche"},{name:"Ivan C.",role:"Le résistant"}],seasons:{1:{name:"Saison 1",episodes:[{number:1,title:"Les Origines",duration:"62min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:2,title:"L'Indépendance",duration:"58min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"},{number:3,title:"Le Gabon d'aujourd'hui",duration:"65min",videoUrl:"https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"}]}}}
+};
+
+const DIRECTORS = [
+  {name:"Imunga Ivanga",years:"1999–2006",bio:"Figure pionnière du cinéma gabonais. Son premier long métrage Dôlè (2000) remporte le Tanit d'Or à Carthage et un prix spécial à Cannes. Il pose les jalons d'un cinéma gabonais ancré dans la réalité urbaine de Libreville.",films:["Dôlè (L'Argent)","L'Ombre de Liberty"],filmIds:[301,302]},
+  {name:"Vincent Mbindzou",years:"2015–présent",bio:"Réalisateur et animateur prolixe, créateur de la série Gabâo (6 saisons, TV5MONDE). Pionnier de la saga Koto et Kengue qui renouvelle le genre fantastique à travers un prisme 100% gabonais.",films:["Gabâo","Koto et Kengue : Les Descendants"],filmIds:[402,305]},
+  {name:"Franck Onouviet",years:"2010–présent",bio:"Auteur de plusieurs courts-métrages primés avant de signer Assang Mefa (2019), premier film historique gabonais à aborder frontalement la résistance à la colonisation française.",films:["Assang Mefa"],filmIds:[303]},
+  {name:"Amédée Pacôme Nkoulou",years:"2010–présent",bio:"Documentariste de renom, Boxing Libreville (2018) révèle au monde les combattants de Libreville et remporte plusieurs prix internationaux. Sa caméra capte l'énergie des quartiers populaires gabonais.",films:["Boxing Libreville"],filmIds:[306]},
+  {name:"Florine & Jérémie Tchoua",years:"2020–présent",bio:"Couple de cinéastes qui brise les codes avec Onomé, premier film de super-héros gabonais. Ils ouvrent la voie à un cinéma populaire et spectaculaire ancré dans l'imaginaire local.",films:["Onomé — Naissance d'un héros"],filmIds:[304]}
+];
+
+const QUIZ_QUESTIONS = [
+  {q:"Quel film d'Imunga Ivanga a remporté le Tanit d'Or au Festival de Carthage en 2000 ?",img:"https://images.unsplash.com/photo-1574028760769-8e24f4f0fc99?w=400&q=80",options:["Dôlè (L'Argent)","L'Ombre de Liberty","Assang Mefa","Boxing Libreville"],correct:0,explain:"Dôlè (L'Argent) a été couronné du Tanit d'Or à Carthage et d'un prix spécial au Festival de Cannes Junior en 2000."},
+  {q:"Sur quelle chaîne gabonaise la série 'Le Chic, le Choc, l'Échec' a-t-elle connu un énorme succès en 2023 ?",img:"https://images.unsplash.com/photo-1524863479829-916d8e77f114?w=400&q=80",options:["RTG","Gabon 1ère","TV5MONDE","Canal+"],correct:1,explain:"La série a été diffusée chaque dimanche à 21h sur Gabon 1ère, devenant un véritable phénomène d'audience."},
+  {q:"Combien de saisons compte la série d'animation gabonaise Gabâo diffusée sur TV5MONDE ?",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80",options:["2 saisons","4 saisons","6 saisons","8 saisons"],correct:2,explain:"Gabâo compte 6 saisons et 156 épisodes diffusés sur TV5MONDE Afrique et TiVi5. Chaque épisode dure environ 4 minutes."},
+  {q:"Quel réalisateur gabonais a créé à la fois la série Gabâo et la saga Koto et Kengue ?",img:"https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80",options:["Imunga Ivanga","Franck Onouviet","Vincent Mbindzou","Amédée P. Nkoulou"],correct:2,explain:"Vincent Mbindzou est l'auteur de Gabâo (animation éducative) et de la saga Koto et Kengue, deux œuvres majeures du cinéma gabonais contemporain."},
+  {q:"Le film 'Assang Mefa' (2019) de Franck Onouviet raconte quelle période de l'histoire du Gabon ?",img:"https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80",options:["L'ère pétrochimique","La période coloniale","L'indépendance de 1960","La Conférence nationale"],correct:1,explain:"Assang Mefa se déroule pendant la colonisation française et raconte le combat du résistant Emane Ntole contre les autorités coloniales qui retiennent son fils en otage."},
+  {q:"Quelle est la durée approximative de chaque épisode de la série 'Le Chic, le Choc, l'Échec' ?",img:"https://images.unsplash.com/photo-1524863479829-916d8e77f114?w=400&q=80",options:["10 minutes","24 minutes","45 minutes","1 heure"],correct:1,explain:"Les épisodes durent environ 24 minutes, format parfait pour une diffusion en prime time le dimanche soir sur Gabon 1ère."},
+  {q:"Quel thème central aborde la série gabonaise 'Impact' (2022) ?",img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80",options:["La boxe à Libreville","L'animation jeunesse","Un web-activiste enlevé par une milice","Une saga familiale coloniale"],correct:2,explain:"Impact met en scène un web-activiste enlevé par une milice au service du pouvoir. La série explore les zones d'ombre de la politique gabonaise contemporaine."},
+  {q:"Sur quelle plateforme internationale 'Koto et Kengue : Les Descendants' est-il disponible ?",img:"https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80",options:["Netflix","Amazon Prime","TV5MONDE Afrique","Disney+"],correct:2,explain:"Koto et Kengue : Les Descendants est disponible sur TV5MONDE Afrique, plateforme qui soutient activement la production audiovisuelle africaine."}
+];
+
+const NEWS_ITEMS = [
+  {id:1,cat:"Festival",title:"Le FESPAM 2025 met le cinéma gabonais à l'honneur avec 8 films en sélection officielle",date:"15 mars 2026",img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=200&q=80",text:"Le Festival panafricain de cinéma de Libreville annonce sa sélection…"},
+  {id:2,cat:"Sortie",title:"'L'Héritage du Fleuve' : la première série NGAN originale commence le tournage au bord de l'Ogooué",date:"10 mars 2026",img:"https://images.unsplash.com/photo-1520637836993-5a1a49857b25?w=200&q=80",text:"Production historique pour NGAN, trois générations au cœur du Gabon…"},
+  {id:3,cat:"Interview",title:"Imunga Ivanga : « Le cinéma gabonais a besoin de formation et d'équipement, pas seulement d'inspiration »",date:"5 mars 2026",img:"https://images.unsplash.com/photo-1574028760769-8e24f4f0fc99?w=200&q=80",text:"Rencontre avec le réalisateur de Dôlè, pionnier incontournable du 7ème art gabonais…"},
+  {id:4,cat:"Prix",title:"'Boxing Libreville' remporte le Grand Prix du documentaire sportif africain à Accra",date:"28 févr. 2026",img:"https://images.unsplash.com/photo-1517649763962-0c623066013b?w=200&q=80",text:"Amédée Pacôme Nkoulou reçoit son prix lors d'une cérémonie très applaudie…"},
+  {id:5,cat:"Série",title:"Saison 2 de 'Impact' : le tournage débute à Libreville avec un budget inédit",date:"20 févr. 2026",img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=200&q=80",text:"Medard Mouele reprend son rôle dans cette suite très attendue par les fans…"},
+  {id:6,cat:"Jeunesse",title:"Gabâo saison 7 annoncée : 26 nouveaux épisodes sur les traditions et langues du Gabon",date:"14 févr. 2026",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80",text:"Vincent Mbindzou confirme une nouvelle saison centrée sur le patrimoine immatériel gabonais…"}
+];
+
+const NOTIFICATIONS_DATA = [
+  {id:1,icon:"fas fa-film",text:"Nouvelle sortie : 'L'Héritage du Fleuve' Saison 1 disponible maintenant",time:"Il y a 2h",read:false},
+  {id:2,icon:"fas fa-star",text:"Votre avis sur 'Dôlè' a été publié avec succès",time:"Il y a 5h",read:false},
+  {id:3,icon:"fas fa-tv",text:"Saison 2 de 'Impact' : 2 nouveaux épisodes disponibles",time:"Il y a 1j",read:true},
+  {id:4,icon:"fas fa-trophy",text:"Boxing Libreville vient de remporter un prix international",time:"Il y a 2j",read:true}
+];
+
+const ALL = Object.values(DB);
+const GABON_ALL = ALL.filter(i=>i.gabon);
+const HERO_IDS = [999,401,301,103];
+const GENRES = ["Tous","Action","Drame","Thriller","Sci-Fi","Horreur","Policier","Fantasy","Crime","Sport","Historique","Social","Documentaire","Animation","Fantastique","Épopée","Histoire","Aventure","Société","Politique","Jeunesse"];
+
+/* ═══ STATE ═══ */
+let state = {
+  page:'home', detailId:null, searchQuery:'', activeGenre:'Tous',
+  watchlist:   JSON.parse(localStorage.getItem('ngan_watchlist')||'[]'),
+  progress:    JSON.parse(localStorage.getItem('ngan_progress') ||'{}'),
+  history:     JSON.parse(localStorage.getItem('ngan_history')  ||'[]'),
+  ratings:     JSON.parse(localStorage.getItem('ngan_ratings')  ||'{}'),
+  userRating:  JSON.parse(localStorage.getItem('ngan_userRatings')||'{}'),
+  reviews:     JSON.parse(localStorage.getItem('ngan_reviews')  ||'{}'),
+  theme:       localStorage.getItem('ngan_theme')||'light',
+  heroIndex:0, heroTimer:null,
+  catPage:1, catPerPage:12,
+  quizIndex:0, quizScore:0, quizAnswered:false,
+  notifs: JSON.parse(localStorage.getItem('ngan_notifs')||JSON.stringify(NOTIFICATIONS_DATA)),
+  parental:    JSON.parse(localStorage.getItem('ngan_parental')||'{"on":false,"age":7,"pin":""}'),
+  profileName: localStorage.getItem('ngan_profileName')||'Utilisateur',
+  profileAvatar: localStorage.getItem('ngan_profileAvatar')||'',
+  deferredInstall: null,
+  shareItem: null,
+  selectedStar: 0
+};
+
+/* ═══ SAVE ═══ */
+const save = (k,v) => localStorage.setItem(k,JSON.stringify(v));
+
+/* ═══ THEME ═══ */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('themeIcon').className=t==='dark'?'fas fa-sun':'fas fa-moon';
+  localStorage.setItem('ngan_theme',t); state.theme=t;
+}
+applyTheme(state.theme);
+document.getElementById('themeBtn').addEventListener('click',()=>applyTheme(state.theme==='dark'?'light':'dark'));
+
+/* ═══ TOAST ═══ */
+let toastTimer;
+function toast(msg,icon='fas fa-check'){
+  clearTimeout(toastTimer);
+  const el=document.getElementById('toast');
+  el.innerHTML=`<i class="${icon}"></i> ${msg}`;
+  el.classList.add('show');
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ═══ NOTIFICATIONS ═══ */
+function renderNotifs(){
+  const list=document.getElementById('notifList');
+  list.innerHTML='';
+  state.notifs.forEach(n=>{
+    const d=document.createElement('div');
+    d.className='notif-item'+(n.read?'':' unread');
+    d.innerHTML=`<div class="notif-icon"><i class="${n.icon}"></i></div><div><div class="notif-text">${n.text}</div><div class="notif-time">${n.time}</div></div>`;
+    d.onclick=()=>{n.read=true;save('ngan_notifs',state.notifs);renderNotifs();updateNotifDot()};
+    list.appendChild(d);
+  });
+}
+function updateNotifDot(){
+  const unread=state.notifs.filter(n=>!n.read).length;
+  document.getElementById('notifDot').classList.toggle('show',unread>0);
+}
+document.getElementById('notifBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  document.getElementById('notifPanel').classList.toggle('open');
+  renderNotifs(); updateNotifDot();
+});
+document.getElementById('markReadBtn').addEventListener('click',()=>{
+  state.notifs.forEach(n=>n.read=true);
+  save('ngan_notifs',state.notifs);renderNotifs();updateNotifDot();
+});
+document.addEventListener('click',e=>{
+  if(!document.getElementById('notifPanel').contains(e.target)&&e.target!==document.getElementById('notifBtn'))
+    document.getElementById('notifPanel').classList.remove('open');
+});
+updateNotifDot();
+
+/* ═══ PWA INSTALL ═══ */
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); state.deferredInstall=e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click',async()=>{
+  if(!state.deferredInstall)return;
+  state.deferredInstall.prompt();
+  const r=await state.deferredInstall.userChoice;
+  if(r.outcome==='accepted') toast('NGAN installé !','fas fa-check-circle');
+  document.getElementById('installBanner').classList.remove('show');
+  state.deferredInstall=null;
+});
+document.getElementById('installCloseBtn').addEventListener('click',()=>document.getElementById('installBanner').classList.remove('show'));
+
+/* ═══ WATCHLIST ═══ */
+function saveWL(){save('ngan_watchlist',state.watchlist)}
+function inWL(id){return state.watchlist.includes(id)}
+function toggleWL(id){
+  const item=DB[id];if(!item)return;
+  if(inWL(id)){state.watchlist=state.watchlist.filter(x=>x!==id);toast('Retiré de votre liste','fas fa-bookmark')}
+  else{state.watchlist.push(id);toast('Ajouté à votre liste','fas fa-bookmark')}
+  saveWL(); refreshWLBtns(id);
+  if(state.page==='watchlist')renderWatchlist();
+}
+function refreshWLBtns(id){
+  const active=inWL(id);
+  document.querySelectorAll(`[data-wl-id="${id}"]`).forEach(btn=>{
+    btn.classList.toggle('active',active);
+    if(btn.classList.contains('hero-wl-btn'))
+      btn.innerHTML=`<i class="fas ${active?'fa-check':'fa-plus'}"></i> ${active?'Dans ma liste':'Ma liste'}`;
+    else btn.innerHTML=`<i class="fas ${active?'fa-check':'fa-plus'}"></i>`;
+    btn.setAttribute('aria-label',active?'Retirer de ma liste':'Ajouter à ma liste');
+  });
+  const dwb=document.getElementById('detailWatchlistBtn');
+  if(dwb&&state.detailId==id){dwb.classList.toggle('active',active);dwb.innerHTML=active?'<i class="fas fa-check"></i>':'<i class="fas fa-plus"></i>';}
+}
+
+/* ═══ HISTORY ═══ */
+function addHistory(id){
+  state.history=state.history.filter(x=>x!==id);
+  state.history.unshift(id);
+  if(state.history.length>20)state.history.pop();
+  save('ngan_history',state.history);
+}
+
+/* ═══ NAVIGATION ═══ */
+const PAGE_MAP={home:'homePage',search:'searchPage',detail:'detailPage',watchlist:'watchlistPage',profile:'profilePage',directors:'directorsPage',quiz:'quizPage',news:'newsPage',catalogue:'cataloguePage'};
+function setPage(page){
+  Object.values(PAGE_MAP).forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none'});
+  document.querySelectorAll('.nav-item').forEach(b=>{
+    const a=b.dataset.nav===page||(page==='detail'&&b.dataset.nav==='home');
+    b.classList.toggle('active',a); b.setAttribute('aria-current',a?'page':'false');
+  });
+  state.page=page;
+  const el=document.getElementById(PAGE_MAP[page]);
+  if(el){el.style.display='block';el.classList.remove('page');void el.offsetWidth;el.classList.add('page')}
+  window.scrollTo(0,0);
+}
+function goHome(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClearBtn').style.display='none';
+  state.searchQuery=''; setPage('home');
+}
+
+/* ═══ HERO CAROUSEL ═══ */
+function buildHero(){
+  const car=document.getElementById('heroCarousel'),dots=document.getElementById('heroDots');
+  car.innerHTML='';dots.innerHTML='';
+  HERO_IDS.forEach((id,i)=>{
+    const item=DB[id];if(!item)return;
+    const sl=document.createElement('div');sl.className='hero-slide';sl.style.backgroundImage=`url('${item.poster}')`;
+    sl.innerHTML=`<div class="hero-content">
+      <div class="hero-genre-badge">${item.gabon?'🇬🇦 ':'<i class="fas fa-fire"></i> '}${item.genres[0].toUpperCase()}</div>
+      <div class="hero-title">${item.title}</div>
+      <div class="hero-meta"><div class="hero-rating"><i class="fas fa-star"></i> ${item.rating}</div><span class="hero-meta-sep">•</span><span>${item.year}</span><span class="hero-meta-sep">•</span><span>${item.type==='film'?'Film':'Série'}</span><span class="hero-meta-sep">•</span><span>${item.duration}</span></div>
+      <p class="hero-desc">${item.description}</p>
+      <div class="hero-btns">
+        <button class="btn-primary hero-detail-btn" data-id="${id}"><i class="fas fa-info-circle"></i> Détails</button>
+        <button class="btn-ghost hero-wl-btn" data-id="${id}" data-wl-id="${id}"><i class="fas ${inWL(id)?'fa-check':'fa-plus'}"></i> ${inWL(id)?'Dans ma liste':'Ma liste'}</button>
+      </div>
+    </div>`;
+    car.appendChild(sl);
+    const dot=document.createElement('button');dot.className='hero-dot'+(i===0?' active':'');dot.setAttribute('role','tab');dot.setAttribute('aria-label',`Slide ${i+1}`);dot.addEventListener('click',()=>goHero(i));dots.appendChild(dot);
+  });
+  car.querySelectorAll('.hero-detail-btn').forEach(b=>b.addEventListener('click',()=>showDetail(+b.dataset.id)));
+  car.querySelectorAll('.hero-wl-btn').forEach(b=>b.addEventListener('click',()=>toggleWL(+b.dataset.id)));
+  startHeroTimer();
+}
+function goHero(idx){
+  state.heroIndex=(idx+HERO_IDS.length)%HERO_IDS.length;
+  document.getElementById('heroCarousel').style.transform=`translateX(-${state.heroIndex*100}%)`;
+  document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('active',i===state.heroIndex));
+}
+function startHeroTimer(){clearInterval(state.heroTimer);state.heroTimer=setInterval(()=>goHero(state.heroIndex+1),5000)}
+
+/* ═══ GENRE FILTER ═══ */
+function buildGenreFilter(){
+  const el=document.getElementById('genreFilter');el.innerHTML='';
+  GENRES.forEach(g=>{
+    const p=document.createElement('button');
+    p.className='genre-pill'+(g===state.activeGenre?' active':'');p.textContent=g;p.setAttribute('role','tab');p.setAttribute('aria-selected',g===state.activeGenre);
+    p.addEventListener('click',()=>{state.activeGenre=g;document.querySelectorAll('.genre-pill').forEach(x=>{x.classList.toggle('active',x.textContent===g);x.setAttribute('aria-selected',x.textContent===g)});buildHomeRows()});
+    el.appendChild(p);
+  });
+}
+
+/* ═══ CARD FACTORY ═══ */
+function createCard(item,showProg=true){
+  const card=document.createElement('div');card.className='movie-card';card.setAttribute('role','listitem');card.setAttribute('tabindex','0');card.setAttribute('aria-label',item.title);
+  const prog=state.progress[item.id]||0,inW=inWL(item.id);
+  const userR=state.userRating[item.id]||0;
+  const stars=userR>0?'★'.repeat(userR)+'☆'.repeat(5-userR):'';
+  card.innerHTML=`<div class="movie-poster skeleton" id="poster-${item.id}">
+    <div class="poster-placeholder"><i class="fas fa-film"></i></div>
+    <img src="${item.poster}" alt="${item.title}" loading="lazy"
+      onload="this.previousElementSibling.classList.add('hidden');this.parentElement.classList.remove('skeleton')"
+      onerror="this.parentElement.classList.remove('skeleton');this.style.display='none'">
+    <div class="poster-overlay">
+      <div class="card-top-badges">
+        <div class="card-type-badge">${item.type==='film'?'FILM':'SÉRIE'}${item.gabon?' ':''}</div>
+        <button class="card-watchlist-btn ${inW?'active':''}" data-wl-id="${item.id}" aria-label="${inW?'Retirer':'Ajouter'}"><i class="fas ${inW?'fa-check':'fa-plus'}"></i></button>
+      </div>
+      <div class="card-bottom">
+        <div class="card-rating"><i class="fas fa-star"></i> ${item.rating}</div>
+        ${userR>0?`<div style="color:#ffd966;font-size:.6rem">${stars}</div>`:''}
+        ${item.gabon&&item.awards&&item.awards.length?'<span class="gabon-badge">Primé</span>':''}
+      </div>
+    </div>
+    ${showProg&&prog>0?`<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${prog}%"></div></div>`:''}
+  </div>
+  <div class="movie-info">
+    <div class="movie-title">${item.title}</div>
+    <div class="movie-sub"><span>${item.year}</span>${item.genres&&item.genres[0]?`<span class="genre-tag">${item.genres[0]}</span>`:''}</div>
+  </div>`;
+  card.querySelector('.card-watchlist-btn').addEventListener('click',e=>{e.stopPropagation();toggleWL(item.id)});
+  card.addEventListener('click',()=>showDetail(item.id));
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')showDetail(item.id)});
+  return card;
+}
+
+/* ═══ HOME ROWS ═══ */
+function buildHomeRows(){
+  const g=state.activeGenre,filter=item=>g==='Tous'||(item.genres&&item.genres.includes(g));
+  const gabonF=GABON_ALL.filter(filter);
+  const films=ALL.filter(i=>i.type==='film'&&!i.gabon&&filter(i)).slice(0,8);
+  const series=ALL.filter(i=>i.type==='serie'&&!i.gabon&&filter(i)).slice(0,8);
+  const reco=ALL.filter(filter).sort(()=>Math.random()-.5).slice(0,8);
+  ['gabonRow','moviesRow','seriesRow','recommendedRow'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=''});
+  const gabonRow=document.getElementById('gabonRow');
+  if(gabonF.length){gabonF.forEach(i=>gabonRow.appendChild(createCard(i)));document.getElementById('gabonSectionWrap').style.display='block'}
+  else document.getElementById('gabonSectionWrap').style.display=g==='Tous'?'block':'none';
+  films.forEach(i=>document.getElementById('moviesRow').appendChild(createCard(i)));
+  series.forEach(i=>document.getElementById('seriesRow').appendChild(createCard(i)));
+  reco.forEach(i=>document.getElementById('recommendedRow').appendChild(createCard(i)));
+  if(!films.length)document.getElementById('moviesRow').innerHTML=`<p style="color:var(--text3);font-size:.82rem;padding:.5rem">Aucun film dans ce genre.</p>`;
+  if(!series.length)document.getElementById('seriesRow').innerHTML=`<p style="color:var(--text3);font-size:.82rem;padding:.5rem">Aucune série dans ce genre.</p>`;
+}
+
+/* ═══ CATALOGUE ═══ */
+function buildCatalogue(){
+  const type=document.getElementById('catType').value;
+  const genre=document.getElementById('catGenre').value;
+  const sort=document.getElementById('catSort').value;
+  let items=ALL.filter(i=>{
+    if(type!=='all'&&i.type!==type)return false;
+    if(genre&&genre!=='Tous'&&!(i.genres&&i.genres.includes(genre)))return false;
+    return true;
+  });
+  if(sort==='rating')items.sort((a,b)=>+b.rating-+a.rating);
+  else if(sort==='year')items.sort((a,b)=>+b.year-+a.year);
+  else items.sort((a,b)=>a.title.localeCompare(b.title));
+  document.getElementById('catCount').textContent=`${items.length} titre${items.length>1?'s':''}`;
+  const total=Math.ceil(items.length/state.catPerPage);
+  state.catPage=Math.min(state.catPage,Math.max(1,total));
+  const page=items.slice((state.catPage-1)*state.catPerPage,state.catPage*state.catPerPage);
+  const grid=document.getElementById('catGrid');grid.innerHTML='';
+  page.forEach(i=>grid.appendChild(createCard(i)));
+  const pag=document.getElementById('catPagination');pag.innerHTML='';
+  if(total>1){
+    const prev=document.createElement('button');prev.className='page-btn';prev.innerHTML='<i class="fas fa-chevron-left"></i>';prev.disabled=state.catPage===1;prev.onclick=()=>{state.catPage--;buildCatalogue()};pag.appendChild(prev);
+    for(let p=1;p<=total;p++){const btn=document.createElement('button');btn.className='page-btn'+(p===state.catPage?' active':'');btn.textContent=p;btn.onclick=()=>{state.catPage=p;buildCatalogue()};pag.appendChild(btn)}
+    const next=document.createElement('button');next.className='page-btn';next.innerHTML='<i class="fas fa-chevron-right"></i>';next.disabled=state.catPage===total;next.onclick=()=>{state.catPage++;buildCatalogue()};pag.appendChild(next);
+  }
+}
+function initCatGenreSelect(){
+  const sel=document.getElementById('catGenre');
+  const allGenres=['Tous',...new Set(ALL.flatMap(i=>i.genres||[]))].sort();
+  allGenres.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;sel.appendChild(o)});
+}
+['catType','catGenre','catSort'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{state.catPage=1;buildCatalogue()}));
+
+/* ═══ SEARCH ═══ */
+let searchDebounce;
+function performSearch(q){
+  state.searchQuery=q;clearTimeout(searchDebounce);
+  searchDebounce=setTimeout(()=>{
+    if(!q.trim()){if(state.page==='search')goHome();return}
+    setPage('search');
+    document.getElementById('searchTitle').textContent=`Résultats pour "${q}"`;
+    const lower=q.toLowerCase();
+    const results=ALL.filter(i=>
+      i.title.toLowerCase().includes(lower)||
+      (i.description&&i.description.toLowerCase().includes(lower))||
+      (i.genres&&i.genres.some(g=>g.toLowerCase().includes(lower)))||
+      (i.director&&i.director.toLowerCase().includes(lower))
+    );
+    const grid=document.getElementById('searchResultsGrid');grid.innerHTML='';
+    if(!results.length){grid.innerHTML=`<div class="no-results"><i class="fas fa-search"></i><p>Aucun résultat pour <strong>"${q}"</strong></p></div>`;return}
+    results.forEach(i=>grid.appendChild(createCard(i)));
+  },250);
+}
+
+/* ═══ NATIVE VIDEO PLAYER ═══ */
+let subInterval;
+const DEMO_SUBS=[{t:2,text:"[Scène d'ouverture — Libreville, 2000]"},{t:8,text:"— Mougler, on a un problème."},
+  {t:14,text:"— Maman est à l'hôpital. Il faut de l'argent."},{t:22,text:"— On va trouver une solution, promis."}];
+function initNativePlayer(url){
+  const wrap=document.getElementById('playerWrap');
+  const vid=document.getElementById('nativeVideo');
+  if(url&&/youtube/.test(url)){wrap.style.display='none';return}
+  wrap.style.display='block';
+  vid.src=url||'';
+  document.getElementById('vcPlay').addEventListener('click',()=>{vid.paused?vid.play():vid.pause()});
+  vid.addEventListener('play',()=>document.getElementById('vcPlay').innerHTML='<i class="fas fa-pause"></i>');
+  vid.addEventListener('pause',()=>document.getElementById('vcPlay').innerHTML='<i class="fas fa-play"></i>');
+  vid.addEventListener('timeupdate',()=>{
+    const p=vid.duration?vid.currentTime/vid.duration*100:0;
+    document.getElementById('vcProgress').value=p;
+    const fmt=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+    document.getElementById('vcTime').textContent=`${fmt(vid.currentTime||0)} / ${fmt(vid.duration||0)}`;
+    state.progress[state.detailId]=Math.round(p);save('ngan_progress',state.progress);
+  });
+  document.getElementById('vcProgress').addEventListener('input',e=>{if(vid.duration)vid.currentTime=e.target.value/100*vid.duration});
+  document.getElementById('vcMute').addEventListener('click',()=>{vid.muted=!vid.muted;document.getElementById('vcMute').innerHTML=vid.muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>'});
+  document.getElementById('vcVol').addEventListener('input',e=>{vid.volume=e.target.value/100});
+  document.getElementById('vcFull').addEventListener('click',()=>{if(wrap.requestFullscreen)wrap.requestFullscreen()});
+  let subsOn=false;
+  document.getElementById('vcSub').addEventListener('click',()=>{
+    subsOn=!subsOn;document.getElementById('vcSub').style.color=subsOn?'var(--green)':'#fff';
+    if(subsOn){
+      clearInterval(subInterval);let si=0;
+      subInterval=setInterval(()=>{
+        if(si<DEMO_SUBS.length){const sub=DEMO_SUBS[si];const el=document.getElementById('subText');el.textContent=sub.text;el.style.display='inline-block';si++;setTimeout(()=>{if(subsOn)el.style.display='none'},3500)}
+        else clearInterval(subInterval);
+      },4000);
+    } else {clearInterval(subInterval);document.getElementById('subText').style.display='none'}
+  });
+}
+
+/* ═══ SHARE ═══ */
+function openShareModal(item){
+  state.shareItem=item;
+  const link=`https://ngan.ga/watch/${item.id}`;
+  document.getElementById('shareLinkInput').value=link;
+  document.getElementById('shareModalBg').classList.add('open');
+}
+function closeShareModal(){document.getElementById('shareModalBg').classList.remove('open')}
+function shareVia(platform){
+  const item=state.shareItem;if(!item)return;
+  const link=`https://ngan.ga/watch/${item.id}`;
+  const text=`Regardez "${item.title}" sur NGAN 🇬🇦 `;
+  const urls={whatsapp:`https://wa.me/?text=${encodeURIComponent(text+link)}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,twitter:`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`};
+  if(platform==='copy'){copyShareLink();return}
+  window.open(urls[platform],'_blank');
+}
+function copyShareLink(){
+  const inp=document.getElementById('shareLinkInput');
+  navigator.clipboard?.writeText(inp.value).then(()=>toast('Lien copié !','fas fa-copy')).catch(()=>{inp.select();document.execCommand('copy');toast('Lien copié !','fas fa-copy')});
+}
+
+/* ═══ RATINGS & REVIEWS ═══ */
+function buildStarInput(itemId){
+  const cur=state.userRating[itemId]||0;state.selectedStar=cur;
+  const btns=document.querySelectorAll('#starInput button');
+  btns.forEach((b,i)=>{
+    b.classList.toggle('active',i<cur);
+    b.onclick=()=>{state.selectedStar=i+1;btns.forEach((x,j)=>x.classList.toggle('active',j<=i))};
+    b.onmouseover=()=>btns.forEach((x,j)=>x.style.color=j<=i?'#ffd966':'var(--bg3)');
+    b.onmouseout=()=>btns.forEach((x,j)=>x.style.color=j<state.selectedStar?'#ffd966':'var(--bg3)');
+  });
+}
+function renderReviews(itemId){
+  const list=document.getElementById('reviewsList');list.innerHTML='';
+  const reviews=(state.reviews[itemId]||[]);
+  if(!reviews.length){list.innerHTML='<p style="font-size:.8rem;color:var(--text3);text-align:center;padding:.5rem">Aucun avis pour le moment. Soyez le premier !</p>';return}
+  reviews.forEach(r=>{
+    const d=document.createElement('div');d.className='review-card';
+    d.innerHTML=`<div class="review-header"><span class="review-user">${r.user}</span><span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div>${r.text?`<div class="review-text">${r.text}</div>`:''}<div class="review-date">${r.date}</div>`;
+    list.appendChild(d);
+  });
+}
+document.getElementById('submitRatingBtn').addEventListener('click',()=>{
+  const id=state.detailId;if(!id)return;
+  if(!state.selectedStar){toast('Choisissez une note d\'abord','fas fa-star');return}
+  state.userRating[id]=state.selectedStar;save('ngan_userRatings',state.userRating);
+  if(!state.reviews[id])state.reviews[id]=[];
+  const comment=document.getElementById('commentInput').value.trim();
+  state.reviews[id].unshift({user:'Vous',stars:state.selectedStar,text:comment,date:new Date().toLocaleDateString('fr-FR')});
+  save('ngan_reviews',state.reviews);
+  document.getElementById('commentInput').value='';
+  renderReviews(id); toast('Avis publié !','fas fa-check');
+  buildStarInput(id);
+});
+
+/* ═══ DETAIL PAGE ═══ */
+function showDetail(id){
+  const item=DB[id];if(!item)return;
+  state.detailId=id; addHistory(id);
+  document.getElementById('detailHeroImg').src=item.poster;document.getElementById('detailHeroImg').alt=item.title;
+  document.getElementById('detailTitle').textContent=item.title;
+  const dwb=document.getElementById('detailWatchlistBtn');
+  dwb.classList.toggle('active',inWL(id));dwb.innerHTML=inWL(id)?'<i class="fas fa-check"></i>':'<i class="fas fa-plus"></i>';
+  dwb.setAttribute('data-wl-id',id);dwb.onclick=()=>toggleWL(id);
+  document.getElementById('detailMetaRow').innerHTML=`
+    <span class="detail-meta-pill detail-rating-pill"><i class="fas fa-star" style="color:#ffc107;margin-right:3px"></i>${item.rating}</span>
+    <span class="detail-meta-pill">${item.year}</span>
+    <span class="detail-meta-pill"><i class="fas ${item.type==='film'?'fa-film':'fa-tv'}" style="margin-right:4px"></i>${item.type==='film'?'Film':'Série'}</span>
+    <span class="detail-meta-pill"><i class="fas fa-clock" style="margin-right:4px"></i>${item.duration}</span>
+    ${item.director?`<span class="detail-meta-pill"><i class="fas fa-video" style="margin-right:4px"></i>${item.director}</span>`:''}`;
+  document.getElementById('detailGabonBadge').style.display=item.gabon?'block':'none';
+  const aw=document.getElementById('detailAwards');
+  if(item.awards&&item.awards.length){aw.innerHTML=item.awards.map(a=>`<span class="award-pill"><i class="fas fa-trophy"></i> ${a}</span>`).join('');aw.style.display='flex'}
+  else{aw.style.display='none';aw.innerHTML=''}
+  document.getElementById('detailGenrePills').innerHTML=(item.genres||[]).map(g=>`<span class="detail-genre-pill">${g}</span>`).join('');
+  document.getElementById('detailDesc').textContent=item.description;
+  // Share buttons
+  document.getElementById('shareRow').innerHTML=`
+    <button class="share-btn" onclick="openShareModal(DB[${id}])"><i class="fas fa-share-alt"></i> Partager</button>
+    <button class="share-btn" onclick="shareVia('whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp</button>`;
+  state.shareItem=item;
+  // Play
+  const pb=document.getElementById('detailPlayBtn');
+  if(item.type==='film'){pb.style.display='flex';pb.onclick=()=>openVideo(item.videoUrl)}else pb.style.display='none';
+  // Trailer
+  const ts=document.getElementById('trailerSection');
+  if(item.trailer){ts.style.display='block';document.getElementById('trailerFrame').src=item.trailer}else ts.style.display='none';
+  // Native player
+  document.getElementById('playerWrap').style.display='none';
+  if(item.type==='film'&&item.videoUrl&&!/youtube/.test(item.videoUrl))initNativePlayer(item.videoUrl);
+  // Cast
+  const cs=document.getElementById('castSection');
+  if(item.cast&&item.cast.length){
+    cs.style.display='block';const scroll=document.getElementById('castScroll');scroll.innerHTML='';
+    item.cast.forEach(c=>{const el=document.createElement('div');el.className='cast-card';el.innerHTML=`<div class="cast-avatar"><i class="fas fa-user"></i></div><div class="cast-name">${c.name}</div><div class="cast-role">${c.role}</div>`;scroll.appendChild(el)});
+  }else cs.style.display='none';
+  // Episodes
+  const ss=document.getElementById('seasonSection');
+  if(item.type==='serie'&&item.seasons){ss.style.display='block';populateSeasons(item)}else ss.style.display='none';
+  // Ratings
+  buildStarInput(id); renderReviews(id);
+  // Suggestions
+  const sugg=document.getElementById('suggestionsRow');sugg.innerHTML='';
+  const genre=(item.genres||[])[0];
+  const similar=ALL.filter(i=>i.id!==id&&i.genres&&i.genres.includes(genre)).slice(0,6);
+  similar.forEach(i=>sugg.appendChild(createCard(i)));
+  document.getElementById('suggestionsSection').style.display=similar.length?'block':'none';
+  // Parental check
+  if(state.parental.on){
+    const age=+item.rating>=4.5?18:14;
+    if(age>state.parental.age){setPage('home');toast('Contenu restreint par le contrôle parental','fas fa-child');return}
+  }
+  setPage('detail');
+}
+function populateSeasons(serie){
+  const sel=document.getElementById('seasonSelect'),list=document.getElementById('episodeList');
+  sel.innerHTML='';
+  Object.entries(serie.seasons).forEach(([k,s])=>{const o=document.createElement('option');o.value=k;o.textContent=s.name;sel.appendChild(o)});
+  function renderEps(k){
+    list.innerHTML='';
+    (serie.seasons[k].episodes||[]).forEach(ep=>{
+      const div=document.createElement('div');div.className='episode-item';div.setAttribute('role','listitem');
+      div.innerHTML=`<span class="ep-num"><i class="fas fa-play-circle"></i> Ép.${ep.number}</span><div class="ep-info"><div class="ep-title">${ep.title}</div><div class="ep-duration"><i class="fas fa-clock" style="margin-right:3px"></i>${ep.duration}</div></div><button class="ep-play" aria-label="Lire ${ep.title}"><i class="fas fa-play"></i></button>`;
+      div.querySelector('.ep-play').addEventListener('click',e=>{e.stopPropagation();openVideo(ep.videoUrl)});
+      div.addEventListener('click',()=>openVideo(ep.videoUrl));
+      list.appendChild(div);
+    });
+  }
+  renderEps(Object.keys(serie.seasons)[0]);
+  sel.onchange=e=>renderEps(e.target.value);
+}
+
+/* ═══ WATCHLIST PAGE ═══ */
+function renderWatchlist(){
+  const grid=document.getElementById('watchlistGrid'),empty=document.getElementById('watchlistEmpty'),count=document.getElementById('watchlistCount');
+  grid.innerHTML='';
+  count.textContent=state.watchlist.length?`${state.watchlist.length} titre${state.watchlist.length>1?'s':''}` :'';
+  if(!state.watchlist.length){empty.style.display='block';grid.style.display='none';return}
+  empty.style.display='none';grid.style.display='grid';
+  state.watchlist.forEach(id=>{const item=DB[id];if(item)grid.appendChild(createCard(item))});
+}
+
+/* ═══ PROFILE PAGE ═══ */
+function renderProfile(){
+  document.getElementById('profileName').textContent=state.profileName;
+  document.getElementById('profileSince').textContent='Membre depuis le '+new Date(localStorage.getItem('ngan_joined')||Date.now()).toLocaleDateString('fr-FR');
+  if(!localStorage.getItem('ngan_joined'))localStorage.setItem('ngan_joined',Date.now());
+  if(state.profileAvatar){
+    document.getElementById('profileAvatarBig').innerHTML=`<img src="${state.profileAvatar}" alt="Avatar"><div class="profile-avatar-edit"><i class="fas fa-camera"></i></div>`;
+    document.getElementById('avatarIcon')&&(document.getElementById('avatarBtn').innerHTML=`<img src="${state.profileAvatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`);
+  }
+  document.getElementById('statWatched').textContent=state.history.length;
+  document.getElementById('statList').textContent=state.watchlist.length;
+  document.getElementById('statRated').textContent=Object.keys(state.userRating).length;
+  const hl=document.getElementById('historyList');hl.innerHTML='';
+  if(!state.history.length){hl.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text3);font-size:.82rem">Aucun visionnage pour le moment.</div>';return}
+  state.history.slice(0,5).forEach(id=>{
+    const item=DB[id];if(!item)return;
+    const p=state.progress[id]||0;
+    const d=document.createElement('div');d.className='history-item';d.style.cursor='pointer';
+    d.innerHTML=`<img class="history-thumb" src="${item.poster}" alt="${item.title}" loading="lazy"><div class="history-info"><div class="history-title">${item.title}</div><div class="history-meta">${item.year} • ${item.type==='film'?'Film':'Série'}</div>${p>0?`<div class="history-prog"><div class="history-prog-fill" style="width:${p}%"></div></div>`:''}</div>`;
+    d.addEventListener('click',()=>showDetail(id));hl.appendChild(d);
+  });
+  document.getElementById('parentalToggle').checked=state.parental.on;
+  document.getElementById('parentalOptions').style.display=state.parental.on?'block':'none';
+  document.querySelectorAll('.age-badge').forEach(b=>b.classList.toggle('active',+b.dataset.age===state.parental.age));
+}
+document.getElementById('parentalToggle').addEventListener('change',e=>{
+  state.parental.on=e.target.checked;save('ngan_parental',state.parental);
+  document.getElementById('parentalOptions').style.display=e.target.checked?'block':'none';
+  toast(e.target.checked?'Contrôle parental activé':'Contrôle parental désactivé','fas fa-child');
+});
+document.querySelectorAll('.age-badge').forEach(b=>b.addEventListener('click',()=>{
+  state.parental.age=+b.dataset.age;save('ngan_parental',state.parental);
+  document.querySelectorAll('.age-badge').forEach(x=>x.classList.toggle('active',x===b));
+}));
+const pinInputs=document.querySelectorAll('.pin-digit');
+pinInputs.forEach((inp,i)=>{
+  inp.addEventListener('input',()=>{if(inp.value&&i<pinInputs.length-1)pinInputs[i+1].focus();const pin=Array.from(pinInputs).map(x=>x.value).join('');state.parental.pin=pin;save('ngan_parental',state.parental)});
+  inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&i>0)pinInputs[i-1].focus()});
+});
+document.getElementById('avatarUpload').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{state.profileAvatar=ev.target.result;localStorage.setItem('ngan_profileAvatar',ev.target.result);renderProfile();toast('Photo de profil mise à jour','fas fa-user')};
+  reader.readAsDataURL(file);
+});
+
+/* ═══ DIRECTORS PAGE ═══ */
+function renderDirectors(){
+  const grid=document.getElementById('directorsGrid');grid.innerHTML='';
+  DIRECTORS.forEach(d=>{
+    const card=document.createElement('div');card.className='director-card';
+    card.innerHTML=`<div class="director-banner"><div class="director-avatar"><i class="fas fa-video"></i></div></div>
+    <div class="director-body">
+      <div class="director-name">${d.name}</div>
+      <div class="director-years">${d.years}</div>
+      <div class="director-bio">${d.bio}</div>
+      <div class="director-films">${d.films.map(f=>`<span class="director-film-tag">${f}</span>`).join('')}</div>
+    </div>`;
+    card.addEventListener('click',()=>{if(d.filmIds&&d.filmIds[0])showDetail(d.filmIds[0])});
+    grid.appendChild(card);
+  });
+}
+
+/* ═══ QUIZ ═══ */
+function renderQuiz(){
+  const content=document.getElementById('quizContent');
+  const fill=document.getElementById('quizProgressFill');
+  if(state.quizIndex>=QUIZ_QUESTIONS.length){
+    const pct=Math.round(state.quizScore/QUIZ_QUESTIONS.length*100);
+    const msg=pct>=80?'Excellent ! Vous êtes un vrai expert du cinéma gabonais 🎬':pct>=50?'Pas mal ! Continuez à explorer le cinéma gabonais.':'Découvrez plus de films gabonais sur NGAN !';
+    fill.style.width='100%';
+    content.innerHTML=`<div class="quiz-score"><div class="quiz-score-num">${state.quizScore}/${QUIZ_QUESTIONS.length}</div><div class="quiz-score-label">${pct}% de bonnes réponses</div><div class="quiz-score-msg">${msg}</div><button class="btn-primary" style="margin:1.5rem auto;display:flex" onclick="restartQuiz()"><i class="fas fa-redo"></i> Recommencer</button></div>`;
+    return;
+  }
+  const q=QUIZ_QUESTIONS[state.quizIndex];
+  fill.style.width=`${(state.quizIndex/QUIZ_QUESTIONS.length)*100}%`;
+  state.quizAnswered=false;
+  content.innerHTML=`<div class="quiz-card">
+    <div class="quiz-q-num">Question ${state.quizIndex+1} / ${QUIZ_QUESTIONS.length}</div>
+    <div class="quiz-question">${q.q}</div>
+    ${q.img?`<img class="quiz-img" src="${q.img}" alt="" loading="lazy">` :''}
+    <div class="quiz-options">${q.options.map((o,i)=>`<button class="quiz-option" data-idx="${i}">${o}</button>`).join('')}</div>
+    <div id="quizExplain" style="display:none" class="quiz-explain">${q.explain}</div>
+  </div>`;
+  content.querySelectorAll('.quiz-option').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(state.quizAnswered)return;state.quizAnswered=true;
+      const chosen=+btn.dataset.idx;
+      const correct=chosen===q.correct;
+      if(correct)state.quizScore++;
+      content.querySelectorAll('.quiz-option').forEach((b,i)=>{
+        b.disabled=true;
+        if(i===q.correct)b.classList.add('correct');
+        else if(i===chosen&&!correct)b.classList.add('wrong');
+      });
+      document.getElementById('quizExplain').style.display='block';
+      setTimeout(()=>{state.quizIndex++;renderQuiz()},2500);
+    });
+  });
+}
+function restartQuiz(){state.quizIndex=0;state.quizScore=0;renderQuiz()}
+document.getElementById('quizRestartBtn').addEventListener('click',restartQuiz);
+
+/* ═══ NEWS ═══ */
+function renderNews(){
+  const grid=document.getElementById('newsGrid');grid.innerHTML='';
+  NEWS_ITEMS.forEach(n=>{
+    const card=document.createElement('div');card.className='news-card';
+    card.innerHTML=`<img class="news-img" src="${n.img}" alt="${n.title}" loading="lazy"><div class="news-body"><div class="news-cat">${n.cat}</div><div class="news-title">${n.title}</div><div class="news-meta">${n.date}</div></div>`;
+    card.addEventListener('click',()=>toast(`Ouverture de l'article…`,'fas fa-newspaper'));
+    grid.appendChild(card);
+  });
+}
+
+/* ═══ VIDEO MODAL ═══ */
+function openVideo(url){
+  const safe=/^https:\/\/www\.youtube\.com\/embed\/[\w-]+/.test(url);
+  if(!safe){toast('Lien vidéo non autorisé','fas fa-exclamation-triangle');return}
+  document.getElementById('playerFrame').src=url;
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('modalCloseBtn').focus();
+}
+function closeVideo(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('playerFrame').src='about:blank';
+  document.body.style.overflow='';
+}
+document.getElementById('modalCloseBtn').addEventListener('click',closeVideo);
+document.getElementById('videoModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeVideo()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeVideo();closeShareModal();document.getElementById('notifPanel').classList.remove('open')}
+});
+
+/* ═══ EVENT LISTENERS ═══ */
+document.getElementById('backBtn').addEventListener('click',()=>{if(state.searchQuery)setPage('search');else goHome()});
+document.getElementById('searchClearBtn').addEventListener('click',goHome);
+document.getElementById('clearSearchBtn').addEventListener('click',goHome);
+document.getElementById('avatarBtn').addEventListener('click',()=>{renderProfile();setPage('profile')});
+document.getElementById('searchInput').addEventListener('input',e=>{
+  const v=e.target.value;document.getElementById('searchClearBtn').style.display=v?'block':'none';
+  if(v)performSearch(v);else{if(state.page==='search')goHome()}
+});
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const nav=btn.dataset.nav;
+    if(nav==='home')goHome();
+    else if(nav==='search'){
+      setPage('search');document.getElementById('searchInput').focus();
+      if(!state.searchQuery){document.getElementById('searchTitle').textContent='Rechercher';document.getElementById('searchResultsGrid').innerHTML=`<div class="no-results"><i class="fas fa-search" style="color:var(--green)"></i><p>Tapez un titre, genre ou réalisateur…</p><p style="font-size:.75rem;margin-top:.4rem;color:var(--text3)">Ex : "Dôlè", "Imunga Ivanga", "Thriller"</p></div>`}
+    }
+    else if(nav==='watchlist'){renderWatchlist();setPage('watchlist')}
+    else if(nav==='profile'){renderProfile();setPage('profile')}
+    else if(nav==='catalogue'){initCatGenreSelect();buildCatalogue();setPage('catalogue')}
+  });
+});
+document.querySelectorAll('.view-all-btn,.gabon-view-all').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const sec=btn.dataset.section;
+    const map={films:'moviesRow',series:'seriesRow',recommended:'recommendedRow',gabon:'gabonRow'};
+    if(map[sec]){goHome();requestAnimationFrame(()=>document.getElementById(map[sec])?.scrollIntoView({behavior:'smooth',block:'center'}))}
+    else if(sec==='directors'){renderDirectors();setPage('directors')}
+    else if(sec==='quiz'){restartQuiz();setPage('quiz')}
+    else if(sec==='news'){renderNews();setPage('news')}
+  });
+});
+
+/* ═══ QUICK NAV FROM HOME EXTRAS ═══ */
+// Add extra nav links to home page
+const extras=[
+  {label:'Réalisateurs',icon:'fas fa-video',action:()=>{renderDirectors();setPage('directors')}},
+  {label:'Quiz',icon:'fas fa-question-circle',action:()=>{restartQuiz();setPage('quiz')}},
+  {label:'Actualités',icon:'fas fa-newspaper',action:()=>{renderNews();setPage('news')}}
+];
+
+/* ═══ INIT ═══ */
+buildHero(); buildGenreFilter(); buildHomeRows(); goHome();
+// Pre-fill genres for catalogue
+initCatGenreSelect();
+// Service Worker (PWA offline)
+if('serviceWorker' in navigator){
+  const sw=`
+self.addEventListener('install',e=>e.waitUntil(caches.open('ngan-v1').then(c=>c.addAll(['/']))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+`;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  const url=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).catch(()=>{});
+}
+</script>
+</body>
+</html>
