@@ -6,11 +6,14 @@
 <title>NGAN</title>
 <meta name="description" content="La plateforme de streaming dédiée au cinéma gabonais et africain.">
 <meta name="theme-color" content="#00AA5E">
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;NGAN&quot;,&quot;short_name&quot;:&quot;NGAN&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#ffffff&quot;,&quot;theme_color&quot;:&quot;#00AA5E&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300AA5E'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E🇬🇦%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;any&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self'; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 :root{
   --green:#00AA5E;--green-dark:#008C4A;--green-glow:rgba(0,170,94,0.18);
@@ -385,7 +388,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* INSTALL BANNER */
-.install-banner{background:linear-gradient(135deg,var(--green-dark),var(--green));padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;margin:0 1rem 1rem;border-radius:14px;display:none}
+.install-banner{background:linear-gradient(135deg,var(--green-dark),var(--green));padding:.75rem 1rem;align-items:center;gap:.75rem;margin:0 1rem 1rem;border-radius:14px;display:none}
 .install-banner.show{display:flex}
 .install-banner-text{flex:1;font-size:.8rem;color:#fff;font-weight:500}
 .install-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
@@ -400,9 +403,8 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
 
 <!-- HEADER -->
 <header class="header" role="banner">
-  <a class="logo-area" id="logoBtn" href="#" aria-label="NGAN accueil" onclick="event.preventDefault();goHome()">
+  <a class="logo-area" id="logoBtn" href="#" aria-label="NGAN accueil">
     <span class="logo">NGAN</span>
-    
   </a>
   <div class="search-container" role="search">
     <i class="fas fa-search" aria-hidden="true"></i>
@@ -526,7 +528,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
   </div>
   <div class="trailer-section" id="trailerSection" style="display:none">
     <div class="trailer-title"><i class="fas fa-film" style="color:var(--green)"></i> Bande-annonce</div>
-    <div class="trailer-embed"><iframe id="trailerFrame" src="" allowfullscreen allow="autoplay" loading="lazy"></iframe></div>
+    <div class="trailer-embed"><iframe id="trailerFrame" src="" allowfullscreen allow="autoplay" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Bande-annonce"></iframe></div>
   </div>
   <div class="player-wrap" id="playerWrap" style="display:none">
     <video class="native-video" id="nativeVideo" preload="none" playsinline>
@@ -594,7 +596,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
 <!-- PROFILE PAGE -->
 <div id="profilePage" class="profile-page page">
   <div class="profile-hero">
-    <div class="profile-avatar-big" id="profileAvatarBig" onclick="document.getElementById('avatarUpload').click()" tabindex="0" aria-label="Changer de photo">
+    <div class="profile-avatar-big" id="profileAvatarBig" tabindex="0" role="button" aria-label="Changer de photo">
       <i class="fas fa-user" id="profileAvatarIcon"></i>
       <div class="profile-avatar-edit"><i class="fas fa-camera"></i></div>
     </div>
@@ -686,7 +688,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
 <!-- VIDEO MODAL (YouTube iframe) -->
 <div id="videoModal" class="modal" role="dialog" aria-modal="true" aria-label="Lecteur vidéo">
   <div class="modal-inner">
-    <iframe id="playerFrame" class="modal-iframe" src="about:blank" allowfullscreen allow="autoplay"></iframe>
+    <iframe id="playerFrame" class="modal-iframe" src="about:blank" allowfullscreen allow="autoplay" referrerpolicy="strict-origin-when-cross-origin" title="Lecteur vidéo"></iframe>
     <button class="modal-close" id="modalCloseBtn" aria-label="Fermer"><i class="fas fa-times"></i></button>
   </div>
 </div>
@@ -696,16 +698,16 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);ove
   <div class="share-modal">
     <div class="share-modal-title">Partager ce contenu</div>
     <div class="share-options">
-      <div class="share-option" onclick="shareVia('whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
-      <div class="share-option" onclick="shareVia('facebook')"><i class="fab fa-facebook" style="color:#1877F2"></i><span>Facebook</span></div>
-      <div class="share-option" onclick="shareVia('twitter')"><i class="fab fa-twitter" style="color:#1DA1F2"></i><span>Twitter</span></div>
-      <div class="share-option" onclick="shareVia('copy')"><i class="fas fa-link" style="color:var(--green)"></i><span>Copier</span></div>
+      <div class="share-option" data-platform="whatsapp" role="button" tabindex="0"><i class="fab fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
+      <div class="share-option" data-platform="facebook" role="button" tabindex="0"><i class="fab fa-facebook" style="color:#1877F2"></i><span>Facebook</span></div>
+      <div class="share-option" data-platform="twitter" role="button" tabindex="0"><i class="fab fa-twitter" style="color:#1DA1F2"></i><span>Twitter</span></div>
+      <div class="share-option" data-platform="copy" role="button" tabindex="0"><i class="fas fa-link" style="color:var(--green)"></i><span>Copier</span></div>
     </div>
     <div class="share-link-row">
       <input class="share-link-input" id="shareLinkInput" readonly>
-      <button class="share-copy-btn" onclick="copyShareLink()">Copier</button>
+      <button class="share-copy-btn" id="shareCopyBtn">Copier</button>
     </div>
-    <button class="share-close" onclick="closeShareModal()">Fermer</button>
+    <button class="share-close" id="shareCloseBtn">Fermer</button>
   </div>
 </div>
 
@@ -800,6 +802,11 @@ let state = {
 
 /* ═══ SAVE ═══ */
 const save = (k,v) => localStorage.setItem(k,JSON.stringify(v));
+
+/* ═══ SÉCURITÉ : échappement HTML pour tout contenu saisi par l'utilisateur ═══ */
+function escapeHtml(str){
+  return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 /* ═══ THEME ═══ */
 function applyTheme(t){
@@ -945,7 +952,22 @@ function goHero(idx){
   document.getElementById('heroCarousel').style.transform=`translateX(-${state.heroIndex*100}%)`;
   document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('active',i===state.heroIndex));
 }
-function startHeroTimer(){clearInterval(state.heroTimer);state.heroTimer=setInterval(()=>goHero(state.heroIndex+1),5000)}
+const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function startHeroTimer(){
+  clearInterval(state.heroTimer);
+  if(prefersReducedMotion)return; // respecte la préférence système de mouvement réduit
+  state.heroTimer=setInterval(()=>goHero(state.heroIndex+1),5000);
+}
+function pauseHeroTimer(){clearInterval(state.heroTimer)}
+// Pause au survol/focus/clavier et quand l'onglet n'est pas visible (WCAG 2.2.2 Pause, Stop, Hide)
+const heroWrapEl=document.querySelector('.hero-wrap');
+if(heroWrapEl){
+  heroWrapEl.addEventListener('mouseenter',pauseHeroTimer);
+  heroWrapEl.addEventListener('mouseleave',startHeroTimer);
+  heroWrapEl.addEventListener('focusin',pauseHeroTimer);
+  heroWrapEl.addEventListener('focusout',startHeroTimer);
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseHeroTimer();else startHeroTimer()});
 
 /* ═══ GENRE FILTER ═══ */
 function buildGenreFilter(){
@@ -993,12 +1015,17 @@ function createCard(item,showProg=true){
 }
 
 /* ═══ HOME ROWS ═══ */
+function shuffle(arr){ // Fisher-Yates : mélange non biaisé, contrairement à sort(()=>Math.random()-.5)
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
 function buildHomeRows(){
   const g=state.activeGenre,filter=item=>g==='Tous'||(item.genres&&item.genres.includes(g));
   const gabonF=GABON_ALL.filter(filter);
   const films=ALL.filter(i=>i.type==='film'&&!i.gabon&&filter(i)).slice(0,8);
   const series=ALL.filter(i=>i.type==='serie'&&!i.gabon&&filter(i)).slice(0,8);
-  const reco=ALL.filter(filter).sort(()=>Math.random()-.5).slice(0,8);
+  const reco=shuffle(ALL.filter(filter)).slice(0,8);
   ['gabonRow','moviesRow','seriesRow','recommendedRow'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=''});
   const gabonRow=document.getElementById('gabonRow');
   if(gabonF.length){gabonF.forEach(i=>gabonRow.appendChild(createCard(i)));document.getElementById('gabonSectionWrap').style.display='block'}
@@ -1074,6 +1101,8 @@ function initNativePlayer(url){
   if(url&&/youtube/.test(url)){wrap.style.display='none';return}
   wrap.style.display='block';
   vid.src=url||'';
+  if(wrap.dataset.initialized){clearInterval(subInterval);return} // évite les écouteurs dupliqués si la fiche est réouverte
+  wrap.dataset.initialized='1';
   document.getElementById('vcPlay').addEventListener('click',()=>{vid.paused?vid.play():vid.pause()});
   vid.addEventListener('play',()=>document.getElementById('vcPlay').innerHTML='<i class="fas fa-pause"></i>');
   vid.addEventListener('pause',()=>document.getElementById('vcPlay').innerHTML='<i class="fas fa-play"></i>');
@@ -1115,12 +1144,22 @@ function shareVia(platform){
   const text=`Regardez "${item.title}" sur NGAN 🇬🇦 `;
   const urls={whatsapp:`https://wa.me/?text=${encodeURIComponent(text+link)}`,facebook:`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,twitter:`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`};
   if(platform==='copy'){copyShareLink();return}
-  window.open(urls[platform],'_blank');
+  window.open(urls[platform],'_blank','noopener,noreferrer');
 }
 function copyShareLink(){
   const inp=document.getElementById('shareLinkInput');
   navigator.clipboard?.writeText(inp.value).then(()=>toast('Lien copié !','fas fa-copy')).catch(()=>{inp.select();document.execCommand('copy');toast('Lien copié !','fas fa-copy')});
 }
+document.querySelectorAll('.share-option').forEach(opt=>{
+  const activate=()=>shareVia(opt.dataset.platform);
+  opt.addEventListener('click',activate);
+  opt.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}});
+});
+document.getElementById('shareCopyBtn').addEventListener('click',copyShareLink);
+document.getElementById('shareCloseBtn').addEventListener('click',closeShareModal);
+document.getElementById('logoBtn').addEventListener('click',e=>{e.preventDefault();goHome()});
+document.getElementById('profileAvatarBig').addEventListener('click',()=>document.getElementById('avatarUpload').click());
+document.getElementById('profileAvatarBig').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('avatarUpload').click()}});
 
 /* ═══ RATINGS & REVIEWS ═══ */
 function buildStarInput(itemId){
@@ -1139,7 +1178,7 @@ function renderReviews(itemId){
   if(!reviews.length){list.innerHTML='<p style="font-size:.8rem;color:var(--text3);text-align:center;padding:.5rem">Aucun avis pour le moment. Soyez le premier !</p>';return}
   reviews.forEach(r=>{
     const d=document.createElement('div');d.className='review-card';
-    d.innerHTML=`<div class="review-header"><span class="review-user">${r.user}</span><span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div>${r.text?`<div class="review-text">${r.text}</div>`:''}<div class="review-date">${r.date}</div>`;
+    d.innerHTML=`<div class="review-header"><span class="review-user">${escapeHtml(r.user)}</span><span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span></div>${r.text?`<div class="review-text">${escapeHtml(r.text)}</div>`:''}<div class="review-date">${escapeHtml(r.date)}</div>`;
     list.appendChild(d);
   });
 }
@@ -1178,9 +1217,12 @@ function showDetail(id){
   document.getElementById('detailGenrePills').innerHTML=(item.genres||[]).map(g=>`<span class="detail-genre-pill">${g}</span>`).join('');
   document.getElementById('detailDesc').textContent=item.description;
   // Share buttons
-  document.getElementById('shareRow').innerHTML=`
-    <button class="share-btn" onclick="openShareModal(DB[${id}])"><i class="fas fa-share-alt"></i> Partager</button>
-    <button class="share-btn" onclick="shareVia('whatsapp')"><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp</button>`;
+  const shareRow=document.getElementById('shareRow');
+  shareRow.innerHTML=`
+    <button class="share-btn" id="shareOpenBtn"><i class="fas fa-share-alt"></i> Partager</button>
+    <button class="share-btn" id="shareWaBtn"><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp</button>`;
+  shareRow.querySelector('#shareOpenBtn').addEventListener('click',()=>openShareModal(item));
+  shareRow.querySelector('#shareWaBtn').addEventListener('click',()=>shareVia('whatsapp'));
   state.shareItem=item;
   // Play
   const pb=document.getElementById('detailPlayBtn');
@@ -1314,7 +1356,8 @@ function renderQuiz(){
     const pct=Math.round(state.quizScore/QUIZ_QUESTIONS.length*100);
     const msg=pct>=80?'Excellent ! Vous êtes un vrai expert du cinéma gabonais 🎬':pct>=50?'Pas mal ! Continuez à explorer le cinéma gabonais.':'Découvrez plus de films gabonais sur NGAN !';
     fill.style.width='100%';
-    content.innerHTML=`<div class="quiz-score"><div class="quiz-score-num">${state.quizScore}/${QUIZ_QUESTIONS.length}</div><div class="quiz-score-label">${pct}% de bonnes réponses</div><div class="quiz-score-msg">${msg}</div><button class="btn-primary" style="margin:1.5rem auto;display:flex" onclick="restartQuiz()"><i class="fas fa-redo"></i> Recommencer</button></div>`;
+    content.innerHTML=`<div class="quiz-score"><div class="quiz-score-num">${state.quizScore}/${QUIZ_QUESTIONS.length}</div><div class="quiz-score-label">${pct}% de bonnes réponses</div><div class="quiz-score-msg">${msg}</div><button class="btn-primary" id="quizScoreRestartBtn" style="margin:1.5rem auto;display:flex"><i class="fas fa-redo"></i> Recommencer</button></div>`;
+    content.querySelector('#quizScoreRestartBtn').addEventListener('click',restartQuiz);
     return;
   }
   const q=QUIZ_QUESTIONS[state.quizIndex];
@@ -1422,15 +1465,10 @@ const extras=[
 buildHero(); buildGenreFilter(); buildHomeRows(); goHome();
 // Pre-fill genres for catalogue
 initCatGenreSelect();
-// Service Worker (PWA offline)
+// Service Worker (PWA offline) — enregistré depuis un vrai fichier sw.js (plus fiable qu'un blob URL,
+// qui échoue silencieusement dans plusieurs navigateurs et empêche l'app de fonctionner hors-ligne)
 if('serviceWorker' in navigator){
-  const sw=`
-self.addEventListener('install',e=>e.waitUntil(caches.open('ngan-v1').then(c=>c.addAll(['/']))));
-self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
-`;
-  const blob=new Blob([sw],{type:'application/javascript'});
-  const url=URL.createObjectURL(blob);
-  navigator.serviceWorker.register(url).catch(()=>{});
+  navigator.serviceWorker.register('sw.js').catch(err=>console.warn('Service worker non enregistré :',err));
 }
 </script>
 </body>
